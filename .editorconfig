@@ -11,3 +11,10 @@ dotnet_style_qualification_for_event = true:suggestion
 dotnet_style_qualification_for_field = true:suggestion
 dotnet_style_qualification_for_method = true:suggestion
 dotnet_style_qualification_for_property = true:suggestion
+
+# ⚡ Flag unused code
+dotnet_diagnostic.IDE0059.severity = warning
+dotnet_diagnostic.IDE0060.severity = warning 
+
+# Unused usings/imports
+dotnet_diagnostic.IDE0005.severity = warning
