@@ -14,6 +14,8 @@ public sealed class Visit : AggregateRoot
     public IReadOnlyList<Activity> Activities => _activities;
     public DateTime CreatedAtUTC { get; }
     public DateTime UpdatedAtUTC { get; private set; }
+    public string CreatedBy { get; }
+    public string UpdatedBy { get; private set; }
 
     private static readonly IReadOnlyDictionary<VisitStatus, VisitStatus?> _linearNext = new Dictionary<VisitStatus, VisitStatus?>()
     {
@@ -23,7 +25,7 @@ public sealed class Visit : AggregateRoot
         { VisitStatus.Completed, null }
     };
 
-    public Visit(Truck truck, Driver driver, IEnumerable<Activity> activities, Guid? id = null, DateTime? nowUTC = null)
+    public Visit(Truck truck, Driver driver, IEnumerable<Activity> activities, Guid? id = null, DateTime? nowUTC = null, string? createdBy = null)
     {
         if (truck is null) throw new NullReferenceInAggregateException(nameof(truck));
         if (driver is null) throw new NullReferenceInAggregateException(nameof(driver));
@@ -41,9 +43,11 @@ public sealed class Visit : AggregateRoot
         var ts = nowUTC ?? DateTime.UtcNow;
         CreatedAtUTC = ts;
         UpdatedAtUTC = ts;
+        CreatedBy = string.IsNullOrWhiteSpace(createdBy) ? "SYSTEM" : createdBy!;
+        UpdatedBy = CreatedBy;
     }
 
-    public void UpdateStatus(VisitStatus next, DateTime? nowUTC = null)
+    public void UpdateStatus(VisitStatus next, string updatedBy, DateTime? nowUTC = null)
     {
         if (Status == next) return; // idempotent no-op
 
@@ -55,6 +59,7 @@ public sealed class Visit : AggregateRoot
         var oldStatus = Status;
         Status = next;
         UpdatedAtUTC = nowUTC ?? DateTime.UtcNow;
+        UpdatedBy = updatedBy;
 
         RaiseDomainEvent(new VisitStatusChanged(Id, oldStatus, next, UpdatedAtUTC));
     }
