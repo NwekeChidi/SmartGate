@@ -34,7 +34,7 @@ public class VisitCreationSpecs
         visit.Status.Should().Be(VisitStatus.PreRegistered);
         visit.Activities.Should().HaveCount(1);
         visit.Activities[0].Type.Should().Be(ActivityType.Collection);
-        visit.Activities[0].UnitNumberNormalized.Should().Be("DfDs214777");
+        visit.Activities[0].UnitNumberNormalized.Should().Be("DFDS214777");
     }
 
     [Fact]

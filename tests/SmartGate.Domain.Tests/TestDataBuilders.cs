@@ -25,4 +25,15 @@ public static class TestData
             activities ?? [Delivery("DFDS11001")],
             id: null,
             nowUTC: nowUTC);
+    public static Visit VisitWithNonNull(
+        Truck truck,
+        Driver driver,
+        IEnumerable<Activity> activities,
+        DateTime nowUTC)
+        => new(
+            truck,
+            driver,
+            activities,
+            id: null,
+            nowUTC);
 }

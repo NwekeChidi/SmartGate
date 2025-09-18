@@ -17,8 +17,7 @@ public sealed class Activity
         if (string.IsNullOrEmpty(unitNumberRaw))
             throw new NullReferenceInAggregateException(nameof(unitNumberRaw));
 
-        if (unitNumberRaw.Length > MaxUnitLength)
-            throw new MaxLengthExceededException(nameof(unitNumberRaw), MaxUnitLength);
+        
 
         this.Id = id ?? Guid.NewGuid();
         this.Type = type;
@@ -28,6 +27,9 @@ public sealed class Activity
         
         if (string.IsNullOrWhiteSpace(normalized))
             throw new InvalidIdentifierException(nameof(this.UnitNumberRaw));
+        
+        if (normalized.Length > MaxUnitLength)
+            throw new MaxLengthExceededException(nameof(unitNumberRaw), MaxUnitLength);
 
         if (!normalized.StartsWith(RequiredUnitPrefix, StringComparison.Ordinal) ||
             normalized.Length <= RequiredUnitPrefix.Length)

@@ -9,21 +9,33 @@ public class GuardClauseSpecs
     [Fact]
     public void Null_truck_rejected()
     {
-        var activity = () => TestData.VisitWith(truck: null!);
+        var activity = () => TestData.VisitWithNonNull(
+            truck: null!,
+            driver: TestData.Driver(),
+            activities: [TestData.Delivery()],
+            nowUTC: DateTime.UtcNow);
         activity.Should().Throw<NullReferenceInAggregateException>();
     }
 
     [Fact]
     public void Null_driver_rejected()
     {
-        var activity = () => TestData.VisitWith(driver: null!);
+        var activity = () => TestData.VisitWithNonNull(
+            truck: TestData.Truck(),
+            driver: null!,
+            activities: [TestData.Delivery()],
+            nowUTC: DateTime.UtcNow);
         activity.Should().Throw<NullReferenceInAggregateException>();
     }
 
     [Fact]
     public void Null_activities_collection_rejected()
     {
-        var activity = () => TestData.VisitWith(activities: null!);
+        var activity = () => TestData.VisitWithNonNull(
+            truck: TestData.Truck(),
+            driver: TestData.Driver(),
+            activities: null!,
+            nowUTC: DateTime.UtcNow);
         activity.Should().Throw<NullReferenceInAggregateException>();
     }
 

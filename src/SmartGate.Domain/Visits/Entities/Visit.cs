@@ -27,7 +27,7 @@ public sealed class Visit : AggregateRoot
     {
         if (truck is null) throw new NullReferenceInAggregateException(nameof(truck));
         if (driver is null) throw new NullReferenceInAggregateException(nameof(driver));
-        if (activities is null || !activities.Any()) throw new NullReferenceInAggregateException(nameof(activities));
+        if (activities is null) throw new NullReferenceInAggregateException(nameof(activities));
 
         var activitiesList = activities.ToList();
         if (activitiesList.Count == 0) throw new ActivitiesRequiredException();

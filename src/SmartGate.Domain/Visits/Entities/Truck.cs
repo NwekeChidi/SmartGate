@@ -13,14 +13,14 @@ public sealed class Truck
         if (string.IsNullOrWhiteSpace(licensePlateRaw))
             throw new NullReferenceInAggregateException(nameof(licensePlateRaw));
 
-        if (licensePlateRaw.Length > MaxPlateLength)
-            throw new MaxLengthExceededException(nameof(licensePlateRaw), MaxPlateLength);
-
         this.LicensePlateRaw = licensePlateRaw;
         var normalized = Normalization.NormalizePlateOrUnit(licensePlateRaw);
 
         if (string.IsNullOrWhiteSpace(normalized))
             throw new InvalidIdentifierException(nameof(licensePlateRaw));
+            
+        if (normalized.Length > MaxPlateLength)
+            throw new MaxLengthExceededException(nameof(licensePlateRaw), MaxPlateLength);
 
         this.LicensePlateNormalized = normalized;
     }

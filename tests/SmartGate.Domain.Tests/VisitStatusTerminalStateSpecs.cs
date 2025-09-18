@@ -13,7 +13,7 @@ public class VisitStatusTerminalStateSpecs
         visit.UpdateStatus(VisitStatus.OnSite);
         visit.UpdateStatus(VisitStatus.Completed);
 
-        var act = () => visit.UpdateStatus(VisitStatus.Completed);
+        var act = () => visit.UpdateStatus(VisitStatus.AtGate);
         act.Should().Throw<CompletedIsTerminalException>();
     }
 }
