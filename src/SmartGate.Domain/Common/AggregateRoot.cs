@@ -2,8 +2,8 @@ namespace SmartGate.Domain.Common;
 
 public abstract class AggregateRoot
 {
-    private readonly List<IDomainEvent> _domainEvents = new();
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
-    protected void AddDomainEvent(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
-    public void ClearDomainEvents() => _domainEvents.Clear(); 
+    private readonly List<IDomainEvent> _domainEvents = [];
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => this._domainEvents.AsReadOnly();
+    protected void AddDomainEvent(IDomainEvent domainEvent) => this._domainEvents.Add(domainEvent);
+    public void ClearDomainEvents() => this._domainEvents.Clear(); 
 }
