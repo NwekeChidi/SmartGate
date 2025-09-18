@@ -17,6 +17,8 @@ public sealed record CreateVisitRequest(
     string? IdempotencyKey
 );
 
+public sealed record DriverInformationDto(string FirstName, string LastName, string Id);
+
 public sealed record ActivityResponse(
     Guid Id,
     ActivityType Type,
@@ -27,8 +29,7 @@ public sealed record VisitResponse(
     Guid Id,
     VisitStatus Status,
     string TruckLicensePlate,
-    string DriverFirstName,
-    string DriverLastName,
+    DriverInformationDto DriverInformation,
     IReadOnlyList<ActivityResponse> Activities,
     string CreatedBy,
     string UpdatedBy,
