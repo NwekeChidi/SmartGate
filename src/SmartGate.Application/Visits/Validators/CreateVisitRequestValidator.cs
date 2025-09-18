@@ -27,7 +27,7 @@ public sealed class CreateVisitRequestValidator : AbstractValidator<CreateVisitR
         
         RuleFor(x => x.Status)
             .Equal(nameof(VisitStatus.PreRegistered))
-            .WithMessage("New visits must have status 'PreRegistered'");
-
+            .WithMessage("New visits must have status 'PreRegistered'")
+            .When(x => x.Status is not null);
     }
 }
