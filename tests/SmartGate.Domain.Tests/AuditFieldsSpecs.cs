@@ -13,7 +13,7 @@ public class AuditFieldsSpecs
         visit.UpdatedAtUTC.Should().Be(t0);
 
         var t1 = t0.AddMinutes(5);
-        visit.UpdateStatus(Visits.VisitStatus.AtGate, t1);
+        visit.UpdateStatus(Visits.VisitStatus.AtGate, "SYSTEM", t1);
         visit.UpdatedAtUTC.Should().Be(t1);
         visit.CreatedAtUTC.Should().Be(t0);
     }

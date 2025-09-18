@@ -9,11 +9,11 @@ public class VisitStatusTerminalStateSpecs
     public void Completed_is_terminal()
     {
         var visit = TestData.VisitWith();
-        visit.UpdateStatus(VisitStatus.AtGate);
-        visit.UpdateStatus(VisitStatus.OnSite);
-        visit.UpdateStatus(VisitStatus.Completed);
+        visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM");
+        visit.UpdateStatus(VisitStatus.OnSite, "SYSTEM");
+        visit.UpdateStatus(VisitStatus.Completed, "SYSTEM");
 
-        var act = () => visit.UpdateStatus(VisitStatus.AtGate);
+        var act = () => visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM");
         act.Should().Throw<CompletedIsTerminalException>();
     }
 }

@@ -14,7 +14,7 @@ public class VisitStatusChangedEventSpecs
         visit.DomainEvents.Should().BeEmpty();
 
         var after = now.AddMinutes(1);
-        visit.UpdateStatus(VisitStatus.AtGate, after);
+        visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM", after);
 
         visit.DomainEvents.Should().HaveCount(1);
         var evt = visit.DomainEvents.Single().Should().BeOfType<VisitStatusChanged>().Subject;
@@ -28,10 +28,10 @@ public class VisitStatusChangedEventSpecs
     public void No_event_when_advancing_to_same_status_idempotent()
     {
         var visit = TestData.VisitWith();
-        visit.UpdateStatus(VisitStatus.AtGate);
+        visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM");
         visit.ClearDomainEvents();
 
-        visit.UpdateStatus(VisitStatus.AtGate);
+        visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM");
         visit.DomainEvents.Should().BeEmpty();
     }
 }

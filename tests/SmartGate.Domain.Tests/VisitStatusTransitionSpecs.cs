@@ -12,7 +12,7 @@ public class VisitStatusTransitionSpecs
     public void PreRegistered_to_AtGate_is_allowed()
     {
         var visit = NewVisit();
-        visit.UpdateStatus(VisitStatus.AtGate);
+        visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM");
         visit.Status.Should().Be(VisitStatus.AtGate);
     }
 
@@ -20,8 +20,8 @@ public class VisitStatusTransitionSpecs
     public void AtGate_to_OnSite_is_allowed()
     {
         var visit = NewVisit();
-        visit.UpdateStatus(VisitStatus.AtGate);
-        visit.UpdateStatus(VisitStatus.OnSite);
+        visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM");
+        visit.UpdateStatus(VisitStatus.OnSite, "SYSTEM");
         visit.Status.Should().Be(VisitStatus.OnSite);
     }
 
@@ -29,10 +29,10 @@ public class VisitStatusTransitionSpecs
     public void OnSite_to_Completed_is_allowed()
     {
         var visit = NewVisit();
-        visit.UpdateStatus(VisitStatus.AtGate);
-        visit.UpdateStatus(VisitStatus.OnSite);
-        visit.UpdateStatus(VisitStatus.Completed);
-        visit.Status.Should().Be(VisitStatus.Completed);
+        visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM");
+        visit.UpdateStatus(VisitStatus.OnSite, "SYSTEM");
+        visit.UpdateStatus(VisitStatus.Completed, "SYSTEM");
+        visit.Status.Should().Be(VisitStatus.Completed, "SYSTEM");
     }
 
     [Theory]
@@ -43,9 +43,9 @@ public class VisitStatusTransitionSpecs
     {
         var visit = NewVisit();
 
-        if (from == VisitStatus.AtGate) visit.UpdateStatus(VisitStatus.AtGate);
+        if (from == VisitStatus.AtGate) visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM");
 
-        var activity = () => visit.UpdateStatus(to);
+        var activity = () => visit.UpdateStatus(to, "SYSTEM");
         activity.Should().Throw<InvalidStatusTransitionException>();
     }
 
@@ -53,8 +53,8 @@ public class VisitStatusTransitionSpecs
     public void Repeating_a_status_is_rejected()
     {
         var visit = NewVisit();
-        visit.UpdateStatus(VisitStatus.AtGate);
-        visit.UpdateStatus(VisitStatus.AtGate);
+        visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM");
+        visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM");
         visit.Status.Should().Be(VisitStatus.AtGate);
     }
 
@@ -62,8 +62,8 @@ public class VisitStatusTransitionSpecs
     public void Going_backwards_is_rejected()
     {
         var visit = NewVisit();
-        visit.UpdateStatus(VisitStatus.AtGate);
-        var act = () => visit.UpdateStatus(VisitStatus.PreRegistered);
+        visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM");
+        var act = () => visit.UpdateStatus(VisitStatus.PreRegistered, "SYSTEM");
         act.Should().Throw<InvalidStatusTransitionException>();
     }
 
