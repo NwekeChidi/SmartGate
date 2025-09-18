@@ -1,5 +1,3 @@
-using SmartGate.Domain.Visits;
-
 namespace SmartGate.Domain.Visits.Entities;
 
 public sealed class Driver
