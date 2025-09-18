@@ -1,7 +1,6 @@
 using FluentAssertions;
 using SmartGate.Domain.Visits;
 using SmartGate.Domain.Visits.Entities;
-using Xunit;
 
 namespace SmartGate.Domain.Tests;
 
