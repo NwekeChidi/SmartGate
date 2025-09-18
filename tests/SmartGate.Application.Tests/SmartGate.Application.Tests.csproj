@@ -25,4 +25,9 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SmartGate.Application\SmartGate.Application.csproj" />
+    <ProjectReference Include="..\..\src\SmartGate.Domain\SmartGate.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
