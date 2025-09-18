@@ -72,8 +72,6 @@ public class ValidatorsTests
         var result = v.TestValidate(req);
         result.ShouldHaveValidationErrorFor(x => x.Status)
             .WithErrorMessage("New visits must have status 'PreRegistered'");
-
-
     }
 
 }
