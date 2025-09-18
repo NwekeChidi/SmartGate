@@ -27,3 +27,7 @@ public sealed class InvalidStatusTransitionException(VisitStatus from, VisitStat
 public sealed class CompletedIsTerminalException() : DomainException("Visit is already Completed and cannot be changed.")
 {
 }
+
+public sealed class UnitNumberMustStartWithDFDSException() : DomainException("Unit number must start with 'DFDS'.")
+{
+}

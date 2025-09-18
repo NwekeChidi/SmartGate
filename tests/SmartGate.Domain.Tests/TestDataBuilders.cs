@@ -8,10 +8,10 @@ public static class TestData
     public static Truck Truck(string licencePlateRaw = " ab-12 cd ") => new(licencePlateRaw);
     public static Driver Driver(string firstName = "Anakin", string lastName = "Skywalker") => new(firstName, lastName);
 
-    public static Activity Delivery(string unitNumberRaw = " zn/009 ")
+    public static Activity Delivery(string unitNumberRaw = " dfds-789576 ")
         => new(ActivityType.Delivery, unitNumberRaw);
 
-    public static Activity Collection(string unitNumberRaw = " bx-777 ")
+    public static Activity Collection(string unitNumberRaw = " dfds189576 ")
         => new(ActivityType.Collection, unitNumberRaw);
 
     public static Visit VisitWith(
@@ -22,7 +22,7 @@ public static class TestData
         => new(
             truck ?? Truck(),
             driver ?? Driver(),
-            activities ?? [Delivery("UN-001")],
+            activities ?? [Delivery("DFDS11001")],
             id: null,
             nowUTC: nowUTC);
 }

@@ -5,6 +5,7 @@ namespace SmartGate.Domain.Visits.Entities;
 public sealed class Activity
 {
     public const int MaxUnitLength = 10;
+    public const string RequiredUnitPrefix = "DFDS";
 
     public Guid Id { get; }
     public ActivityType Type { get; }
@@ -27,6 +28,10 @@ public sealed class Activity
         
         if (string.IsNullOrWhiteSpace(normalized))
             throw new InvalidIdentifierException(nameof(this.UnitNumberRaw));
+
+        if (!normalized.StartsWith(RequiredUnitPrefix, StringComparison.Ordinal) ||
+            normalized.Length <= RequiredUnitPrefix.Length)
+            throw new UnitNumberMustStartWithDFDSException();
 
         this.UnitNumberNormalized = normalized;
     }
