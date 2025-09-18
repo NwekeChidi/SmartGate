@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\SmartGate.Application\SmartGate.Application.csproj" />
     <ProjectReference Include="..\..\src\SmartGate.Domain\SmartGate.Domain.csproj" />
+    <ProjectReference Include="..\SmartGate.Domain.Tests\SmartGate.Domain.Tests.csproj" />
   </ItemGroup>
 
 </Project>
