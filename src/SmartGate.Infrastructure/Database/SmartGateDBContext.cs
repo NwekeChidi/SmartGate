@@ -6,15 +6,13 @@ using SmartGate.Infrastructure.Database.Setup;
 
 namespace SmartGate.Infrastructure.Persistence;
 
-public class SmartGateDbContext : DbContext
+public class SmartGateDbContext(DbContextOptions<SmartGateDbContext> options) : DbContext(options)
 {
     public DbSet<Visit> Visits => Set<Visit>();
     public DbSet<Activity> Activities => Set<Activity>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<IdempotencyKey> IdempotencyKeys => Set<IdempotencyKey>();
-    public DbSet<Driver> Drivers => Set<Driver>();  
-
-    public SmartGateDbContext(DbContextOptions<SmartGateDbContext> options) : base(options) { }
+    public DbSet<Driver> Drivers => Set<Driver>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
