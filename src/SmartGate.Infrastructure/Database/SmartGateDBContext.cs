@@ -4,7 +4,7 @@ using SmartGate.Domain.Common;
 using SmartGate.Domain.Visits.Entities;
 using SmartGate.Infrastructure.Database.Setup;
 
-namespace SmartGate.Infrastructure.Persistence;
+namespace SmartGate.Infrastructure.Database;
 
 public class SmartGateDbContext(DbContextOptions<SmartGateDbContext> options) : DbContext(options)
 {
