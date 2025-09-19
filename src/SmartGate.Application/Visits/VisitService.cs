@@ -99,11 +99,11 @@ public sealed class VisitService : IVisitService
         return new PaginatedResult<VisitResponse>(pr.Page, pr.PageSize, items.Count, items);
     }
 
-    public async Task<VisitResponse> UpdateVisitStatusAsync(UpdateVisitStatusRequest request, CancellationToken ct = default)
+    public async Task<VisitResponse> UpdateVisitStatusAsync(UpdateVisitStatusRequest request, Guid VisitId, CancellationToken ct = default)
     {
         await _statusValidator.ValidateAndThrowAsync(request, ct);
 
-        var visit = await _repo.GetByIdAsync(request.VisitId, ct)
+        var visit = await _repo.GetByIdAsync(VisitId, ct)
             ?? throw new KeyNotFoundException("Visit not found.");
 
         var from = visit.Status;

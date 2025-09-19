@@ -129,9 +129,9 @@ public class VisitServiceTests
         clock.UTCNow.Returns(updatedTime);
         var service = TestHelpers.Service(repo, clock, user);
 
-        var req = new UpdateVisitStatusRequest(visit.Id, VisitStatus.AtGate);
+        var req = new UpdateVisitStatusRequest(VisitStatus.AtGate);
 
-        var response = await service.UpdateVisitStatusAsync(req);
+        var response = await service.UpdateVisitStatusAsync(req, Guid.NewGuid());
 
         // assert
         response.Status.Should().Be(VisitStatus.AtGate);

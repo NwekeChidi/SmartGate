@@ -51,11 +51,8 @@ public class ValidatorsTests
     {
         var v = new UpdateVisitStatusRequestValidator();
 
-        var ok = new UpdateVisitStatusRequest(Guid.NewGuid(), VisitStatus.OnSite);
+        var ok = new UpdateVisitStatusRequest(VisitStatus.OnSite);
         v.TestValidate(ok).ShouldNotHaveAnyValidationErrors();
-
-        var badId = new UpdateVisitStatusRequest(Guid.Empty, VisitStatus.AtGate);
-        v.TestValidate(badId).ShouldHaveValidationErrorFor(x => x.VisitId);
     }
 
     [Fact]

@@ -39,6 +39,6 @@ public sealed record VisitResponse(
     DateTime UpdatedAtUtc
 );
 
-public sealed record UpdateVisitStatusRequest(Guid VisitId, VisitStatus NewStatus);
+public sealed record UpdateVisitStatusRequest(VisitStatus NewStatus);
 
 public sealed record PaginatedResult<T>(int Page, int PageSize, int Count, IReadOnlyList<T> Items);

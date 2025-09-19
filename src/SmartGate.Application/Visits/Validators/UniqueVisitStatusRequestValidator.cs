@@ -7,7 +7,6 @@ public sealed class UpdateVisitStatusRequestValidator : AbstractValidator<Update
 {
     public UpdateVisitStatusRequestValidator()
     {
-        RuleFor(x => x.VisitId).NotEmpty();
         RuleFor(x => x.NewStatus)
             .IsInEnum()
             .Must(s => s is VisitStatus.PreRegistered or VisitStatus.AtGate or VisitStatus.OnSite or VisitStatus.Completed);

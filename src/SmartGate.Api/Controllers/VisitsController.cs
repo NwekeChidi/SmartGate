@@ -33,7 +33,7 @@ public sealed class VisitsController : ControllerBase
     [HttpGet("/")]
     [Authorize(Policy = "VisitsRead")]
     [ProducesResponseType(typeof(PaginatedResult<VisitResponse>), StatusCodes.Status200OK)]
-    public async Task<IResult> List([FromQuery] int page = 1, [FromQuery] int pageSize = 50, CancellationToken ct = default)
+    public async Task<IResult> List([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
     {
         try
         {
@@ -53,10 +53,7 @@ public sealed class VisitsController : ControllerBase
     {
         try
         {
-            if (body.VisitId != id)
-                return Results.BadRequest(new { message = "Route id and body.VisitId must match." });
-
-            var res = await _svc.UpdateVisitStatusAsync(body, ct);
+            var res = await _svc.UpdateVisitStatusAsync(body, id, ct);
             return Results.Ok(res);
         }
         catch (Exception ex)
