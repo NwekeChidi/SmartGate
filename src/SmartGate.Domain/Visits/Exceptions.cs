@@ -31,3 +31,7 @@ public sealed class CompletedIsTerminalException() : DomainException("Visit is a
 public sealed class UnitNumberMustStartWithDFDSException() : DomainException("Unit number must start with 'DFDS'.")
 {
 }
+
+public sealed class InvalidDriverIdException(string message) : DomainException(message)
+{
+}

@@ -34,7 +34,8 @@ public static class TestHelpers
         IUserContext? user = null,
         IIdempotencyStore? idem = null,
         IPiiPolicy? pii = null,
-        ILogger<VisitService>? log = null) => new VisitService(
+        IDriverRepository? driver = null,
+        ILogger<VisitService>? log = null) => new(
             repo,
             CreateValidator(),
             UpdateValidator(),
@@ -42,6 +43,7 @@ public static class TestHelpers
             pii ?? Pii(),
             idem ?? Idem(),
             user ?? User(),
+            driver ?? Substitute.For<IDriverRepository>(),
             log ?? NullLogger<VisitService>.Instance
         );
 

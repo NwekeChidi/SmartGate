@@ -1,10 +1,13 @@
+using System.Text.RegularExpressions;
 using FluentValidation;
 using SmartGate.Domain.Visits;
 
 namespace SmartGate.Application.Visits.Dto;
 
-public sealed class CreateVisitRequestValidator : AbstractValidator<CreateVisitRequest>
+public sealed partial class CreateVisitRequestValidator : AbstractValidator<CreateVisitRequest>
 {
+    private static readonly Regex DriverIdRegex = _driverIdRegex();
+
     public CreateVisitRequestValidator()
     {
         RuleFor(x => x.TruckLicensePlate).NotEmpty().MaximumLength(32);
@@ -13,9 +16,9 @@ public sealed class CreateVisitRequestValidator : AbstractValidator<CreateVisitR
         RuleFor(x => x.Driver.FirstName).NotEmpty().MaximumLength(128);
         RuleFor(x => x.Driver.LastName).NotEmpty().MaximumLength(128);
         RuleFor(x => x.Driver.Id)
-            .NotEmpty().WithMessage("Driver.Id is required")
-            .MinimumLength(8).WithMessage("Driver.Id must be at least 8 characters long")
-            .Must(id => id != null && id.StartsWith("DFDS")).WithMessage("Driver.Id must start with 'DFDS'");
+            .NotEmpty()
+            .Must(DriverIdRegex.IsMatch)
+            .WithMessage("Driver.Id must match pattern DFDS-<1..6 alphanumeric characters>.");
 
         RuleFor(x => x.Activities).NotNull().Must(a => a.Count > 0).WithMessage("At least one activity is required");
 
@@ -34,4 +37,7 @@ public sealed class CreateVisitRequestValidator : AbstractValidator<CreateVisitR
             .WithMessage("New visits must have status 'PreRegistered'")
             .When(x => x.Status is not null);
     }
+
+    [GeneratedRegex(@"^(?i)dfds-[a-z0-9]{1,6}$", RegexOptions.Compiled, "en-US")]
+    private static partial Regex _driverIdRegex();
 }

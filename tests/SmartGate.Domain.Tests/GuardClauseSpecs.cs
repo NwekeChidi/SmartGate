@@ -57,8 +57,8 @@ public class GuardClauseSpecs
     public void Oversized_driver_names_rejected()
     {
         var longName = new string('a', Driver.MaxNameLength + 1);
-        var activity1 = () => new Driver(longName, "Ok", "dfds-20203485");
-        var activity2 = () => new Driver("Ok", longName, "dfds-202456353");
+        var activity1 = () => new Driver(longName, "Ok", "dfds-202034");
+        var activity2 = () => new Driver("Ok", longName, "dfds-202456");
 
         activity1.Should().Throw<MaxLengthExceededException>();
         activity2.Should().Throw<MaxLengthExceededException>();

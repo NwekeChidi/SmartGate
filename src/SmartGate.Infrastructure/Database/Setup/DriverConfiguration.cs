@@ -11,12 +11,16 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
         eb.ToTable("drivers");
         eb.HasKey(d => d.Id);
 
+        eb.Property(d => d.Id)
+            .HasMaxLength(Driver.MaxDriverIdLength)
+            .IsRequired();
+
         eb.Property(d => d.FirstName)
-            .HasMaxLength(128)
+            .HasMaxLength(Driver.MaxNameLength)
             .IsRequired();
 
         eb.Property(d => d.LastName)
-            .HasMaxLength(128)
+            .HasMaxLength(Driver.MaxNameLength)
             .IsRequired();
 
         eb.HasIndex(d => new { d.LastName, d.FirstName });

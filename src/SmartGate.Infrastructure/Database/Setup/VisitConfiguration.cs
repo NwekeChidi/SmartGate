@@ -32,7 +32,10 @@ public class VisitConfiguration : IEntityTypeConfiguration<Visit>
             tb.WithOwner();
         });
 
-        eb.Property<string>("DriverId").IsRequired();
+        eb.Property<string>("DriverId")
+            .HasMaxLength(Driver.MaxDriverIdLength)
+            .IsRequired();
+
         eb.HasOne(v => v.Driver)
             .WithMany()
             .HasForeignKey("DriverId")

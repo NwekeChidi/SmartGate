@@ -16,6 +16,7 @@ public sealed class VisitService : IVisitService
     private readonly IPiiPolicy _pii;
     private readonly IIdempotencyStore _idem;
     private readonly IUserContext _user;
+    private readonly IDriverRepository _drivers;
     private readonly ILogger<VisitService> _log;
     public VisitService(
         IVisitRepository repo,
@@ -25,6 +26,7 @@ public sealed class VisitService : IVisitService
         IPiiPolicy pii,
         IIdempotencyStore idem,
         IUserContext user,
+        IDriverRepository drivers,
         ILogger<VisitService> log)
     {
         _repo = repo;
@@ -34,6 +36,7 @@ public sealed class VisitService : IVisitService
         _pii = pii;
         _idem = idem;
         _user = user;
+        _drivers = drivers;
         _log = log;
     }
 
@@ -52,12 +55,18 @@ public sealed class VisitService : IVisitService
                 throw new DuplicateRequestException($"A request with IdempotencyKey '{key}' already exists.");
         }
 
-        // PII policy to attempt
-        var driver = new Driver(
-            _pii.SanitizeFirstName(request.Driver.FirstName),
-            _pii.SanitizeLastName(request.Driver.LastName),
-            request.Driver.Id
-        );
+        var normalizedDriverId = request.Driver.Id.ToUpperInvariant();
+        var driverEntity = await _drivers.GetByIdAsync(normalizedDriverId, ct);
+        if (driverEntity == null)
+        {
+            driverEntity = new Driver(
+                _pii.SanitizeFirstName(request.Driver.FirstName),
+                _pii.SanitizeLastName(request.Driver.LastName),
+                normalizedDriverId
+            );
+            await _drivers.AddAsync(driverEntity, ct);
+        }
+        var driver = driverEntity;
 
         var truck = new Truck(request.TruckLicensePlate);
         var activities = request.Activities
