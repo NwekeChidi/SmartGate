@@ -19,7 +19,7 @@ public class VisitServiceTests
         var user = TestHelpers.User("Yoda");
         var now = new DateTime(2025, 9, 18, 8, 30, 0, DateTimeKind.Utc);
         var clock = TestHelpers.FixedClock(now);
-        var idem = TestHelpers.Idem(exists: false);
+        var idem = TestHelpers.Idem(reserved: false);
 
         Visit? saved = null;
         repo.AddAsync(Arg.Do<Visit>(v => saved = v), Arg.Any<CancellationToken>())
@@ -78,7 +78,7 @@ public class VisitServiceTests
 
         repo.GetByIdAsync(visitId, Arg.Any<CancellationToken>()).Returns(exisiting);
 
-        var idem = TestHelpers.Idem(exists: true, id: visitId);
+        var idem = TestHelpers.Idem(reserved: false);
         var service = TestHelpers.Service(repo, idem: idem);
 
         var req = new CreateVisitRequest(

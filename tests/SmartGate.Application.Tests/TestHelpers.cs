@@ -18,11 +18,13 @@ public static class TestHelpers
     public static IValidator<CreateVisitRequest> CreateValidator() => new CreateVisitRequestValidator();
     public static IValidator<UpdateVisitStatusRequest> UpdateValidator() => new UpdateVisitStatusRequestValidator();
 
-    public static IIdempotencyStore Idem(bool exists = false, Guid? id = null)
+    public static IIdempotencyStore Idem(bool reserved = true)
     {
         var s = Substitute.For<IIdempotencyStore>();
-        s.ExistsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(exists);
-        s.GetVisitIdAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(id);
+        s.TryReserveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(reserved);
+        s.CompleteAsync(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
         return s;
     }
 

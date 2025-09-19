@@ -66,7 +66,7 @@ public class ValidatorsTests
             TruckLicensePlate: "ABC123",
             Driver: new DriverDto("Luke", "Skywalker", "DFDS20245768"),
             Activities: [new ActivityDto(ActivityType.Delivery, "DFDS123456")],
-            Status: "OnSite",
+            Status: VisitStatus.OnSite,
             IdempotencyKey: null);
 
         var result = v.TestValidate(req);
