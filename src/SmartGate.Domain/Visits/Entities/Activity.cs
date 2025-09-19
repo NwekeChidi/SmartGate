@@ -12,22 +12,26 @@ public sealed class Activity
     public string UnitNumberRaw { get; }
     public string UnitNumberNormalized { get; }
 
+    private Activity()
+    {
+        UnitNumberNormalized = null!;
+        UnitNumberRaw = null!;
+     }
+
     public Activity(ActivityType type, string unitNumberRaw, Guid? id = null)
     {
         if (string.IsNullOrEmpty(unitNumberRaw))
             throw new NullReferenceInAggregateException(nameof(unitNumberRaw));
 
-        
+        Id = id ?? Guid.NewGuid();
+        Type = type;
 
-        this.Id = id ?? Guid.NewGuid();
-        this.Type = type;
-
-        this.UnitNumberRaw = unitNumberRaw;
+        UnitNumberRaw = unitNumberRaw;
         var normalized = Normalization.NormalizePlateOrUnit(unitNumberRaw);
-        
+
         if (string.IsNullOrWhiteSpace(normalized))
-            throw new InvalidIdentifierException(nameof(this.UnitNumberRaw));
-        
+            throw new InvalidIdentifierException(nameof(UnitNumberRaw));
+
         if (normalized.Length > MaxUnitLength)
             throw new MaxLengthExceededException(nameof(unitNumberRaw), MaxUnitLength);
 
@@ -35,7 +39,7 @@ public sealed class Activity
             normalized.Length <= RequiredUnitPrefix.Length)
             throw new UnitNumberMustStartWithDFDSException();
 
-        this.UnitNumberNormalized = normalized;
+        UnitNumberNormalized = normalized;
     }
 
 }

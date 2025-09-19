@@ -8,6 +8,12 @@ public sealed class Truck
     public string LicensePlateRaw { get; }
     public string LicensePlateNormalized { get; }
 
+    public Truck()
+    {
+        LicensePlateRaw = null!;
+        LicensePlateNormalized = null!;
+    }
+
     public Truck(string licensePlateRaw)
     {
         if (string.IsNullOrWhiteSpace(licensePlateRaw))
@@ -18,7 +24,7 @@ public sealed class Truck
 
         if (string.IsNullOrWhiteSpace(normalized))
             throw new InvalidIdentifierException(nameof(licensePlateRaw));
-            
+
         if (normalized.Length > MaxPlateLength)
             throw new MaxLengthExceededException(nameof(licensePlateRaw), MaxPlateLength);
 

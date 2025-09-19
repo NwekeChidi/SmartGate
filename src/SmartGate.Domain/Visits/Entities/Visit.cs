@@ -25,6 +25,15 @@ public sealed class Visit : AggregateRoot
         { VisitStatus.Completed, null }
     };
 
+    private Visit()
+    {
+        // Required for EF Core materialization; properties are non-nullable but will be set by EF.
+        Truck = null!;
+        Driver = null!;
+        CreatedBy = null!;
+        UpdatedBy = null!;
+    } // EF Core
+
     public Visit(Truck truck, Driver driver, IEnumerable<Activity> activities, Guid? id = null, DateTime? nowUTC = null, string? createdBy = null)
     {
         if (truck is null) throw new NullReferenceInAggregateException(nameof(truck));
@@ -34,9 +43,9 @@ public sealed class Visit : AggregateRoot
         var activitiesList = activities.ToList();
         if (activitiesList.Count == 0) throw new ActivitiesRequiredException();
 
-        this.Id = id ?? Guid.NewGuid();
-        this.Truck = truck;
-        this.Driver = driver;
+        Id = id ?? Guid.NewGuid();
+        Truck = truck;
+        Driver = driver;
 
         _activities.AddRange(activitiesList);
 

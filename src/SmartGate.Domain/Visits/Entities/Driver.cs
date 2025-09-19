@@ -3,11 +3,17 @@ namespace SmartGate.Domain.Visits.Entities;
 public sealed class Driver
 {
     public const int MaxNameLength = 128;
-    public Guid Id { get; }
+    public string Id { get; }
     public string FirstName { get; }
     public string LastName { get; }
 
-    public Driver(string firstName, string lastName, Guid? id = null)
+    private Driver()
+    {
+        Id = null!;
+        FirstName = null!;
+        LastName = null!;
+    }
+    public Driver(string firstName, string lastName, string id)
     {
         if (string.IsNullOrWhiteSpace(firstName))
             throw new NullReferenceInAggregateException(nameof(firstName));
@@ -21,11 +27,10 @@ public sealed class Driver
         if (lastName.Length > MaxNameLength)
             throw new MaxLengthExceededException(nameof(lastName), MaxNameLength);
 
-        this.Id = id ?? Guid.NewGuid();
-
-        this.FirstName = firstName.Trim();
-        this.LastName = lastName.Trim();
+        Id = id;
+        FirstName = firstName.Trim();
+        LastName = lastName.Trim();
     }
     
-    public override string ToString() => $"{this.FirstName} {this.LastName}";
+    public override string ToString() => $"{FirstName} {LastName}";
 }
