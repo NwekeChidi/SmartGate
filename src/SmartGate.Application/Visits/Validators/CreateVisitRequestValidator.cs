@@ -21,7 +21,7 @@ public sealed class CreateVisitRequestValidator : AbstractValidator<CreateVisitR
 
         RuleForEach(x => x.Activities).ChildRules(activity =>
         {
-            activity.RuleFor(a => a.UnitNumberRaw)
+            activity.RuleFor(a => a.UnitNumber)
                 .NotEmpty().MaximumLength(32);
         });
 

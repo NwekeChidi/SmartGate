@@ -72,7 +72,7 @@ public sealed class VisitService : IVisitService
 
         var truck = new Truck(request.TruckLicensePlate);
         var activities = request.Activities
-            .Select(a => new Activity(a.Type, a.UnitNumberRaw))
+            .Select(a => new Activity(a.Type, a.UnitNumber))
             .ToList();
 
         var now = _clock.UTCNow;
