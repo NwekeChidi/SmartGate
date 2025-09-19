@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartGate.Application.Abstractions;
 using SmartGate.Domain.Common;
 
 namespace SmartGate.Api.ErrorHandling;
@@ -32,6 +33,12 @@ public static class ProblemDetailsExtensions
                 pd.Detail = "One or more fields are invalid.";
                 pd.Status = StatusCodes.Status400BadRequest;
                 pd.Extensions["errors"] = vex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                break;
+            
+            case DuplicateRequestException dupEx:
+                pd.Title = "Duplicate request";
+                pd.Detail = dupEx.Message;
+                pd.Status = StatusCodes.Status409Conflict;
                 break;
 
             default:

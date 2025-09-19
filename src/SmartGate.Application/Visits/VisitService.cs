@@ -44,23 +44,12 @@ public sealed class VisitService : IVisitService
         await _createValidator.ValidateAndThrowAsync(request, ct);
 
         // Idempotency
-        if (!string.IsNullOrWhiteSpace(request.IdempotencyKey))
+        var key = request.IdempotencyKey;
+        if (!string.IsNullOrWhiteSpace(key))
         {
-            if (await _idem.ExistsAsync(request.IdempotencyKey!, ct))
-            {
-                var existingId = await _idem.GetVisitIdAsync(request.IdempotencyKey!, ct);
-                if (existingId is { } id)
-                {
-                    var existing = await _repo.GetByIdAsync(id, ct);
-                    if (existing is not null)
-                    {
-                        _log.LogInformation(
-                            $"Idempotency hit for key {request.IdempotencyKey}; returning existing Visit {id}");
-                        return Map(existing);
-                    }
-                }
-                _log.LogDebug($"Idempotency key {request.IdempotencyKey} exists but visit not found; proceeding to create");
-            }
+            var reserved = await _idem.TryReserveAsync(key!, ct);
+            if (!reserved)
+                throw new DuplicateRequestException($"A request with IdempotencyKey '{key}' already exists.");
         }
 
         // PII policy to attempt
@@ -81,8 +70,8 @@ public sealed class VisitService : IVisitService
         await _repo.AddAsync(visit, ct);
         await _repo.SaveChangesAsync(ct);
 
-        if (!string.IsNullOrWhiteSpace(request.IdempotencyKey))
-            await _idem.RememberAsync(request.IdempotencyKey!, visit.Id, ct);
+        if (!string.IsNullOrWhiteSpace(key))
+            await _idem.CompleteAsync(key!, visit.Id, ct);
 
          _log.LogInformation($"Visit {visit.Id} created at {visit.CreatedAtUTC} by {_user.Subject}");
         return Map(visit);
