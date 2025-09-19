@@ -6,7 +6,10 @@ namespace SmartGate.Domain.Tests;
 public static class TestData
 {
     public static Truck Truck(string licencePlateRaw = " ab-12 cd ") => new(licencePlateRaw);
-    public static Driver Driver(string firstName = "Anakin", string lastName = "Skywalker") => new(firstName, lastName);
+    public static Driver Driver(
+        string firstName = "Anakin",
+        string lastName = "Skywalker",
+        string id = "dfds-202435467") => new(firstName, lastName, id);
 
     public static Activity Delivery(string unitNumberRaw = " dfds-789576 ")
         => new(ActivityType.Delivery, unitNumberRaw);

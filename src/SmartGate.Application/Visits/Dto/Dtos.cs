@@ -4,7 +4,8 @@ namespace SmartGate.Application.Visits.Dto;
 
 public sealed record DriverDto(
     string FirstName,
-    string LastName
+    string LastName,
+    string Id
 );
 
 public sealed record ActivityDto(ActivityType Type, string UnitNumberRaw);

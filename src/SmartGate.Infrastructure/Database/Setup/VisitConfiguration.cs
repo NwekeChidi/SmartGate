@@ -33,7 +33,7 @@ public class VisitConfiguration : IEntityTypeConfiguration<Visit>
             tb.WithOwner();
         });
 
-        eb.Property<Guid>("DriverId").IsRequired();
+        eb.Property<string>("DriverId").IsRequired();
         eb.HasOne(v => v.Driver)
             .WithMany() // not tracking back-collection on Driver
             .HasForeignKey("DriverId")

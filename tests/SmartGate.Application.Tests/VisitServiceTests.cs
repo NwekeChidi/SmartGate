@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using FluentAssertions;
 using NSubstitute;
 using SmartGate.Application.Abstractions;
@@ -31,7 +30,7 @@ public class VisitServiceTests
 
         var req = new CreateVisitRequest(
             TruckLicensePlate: " abc 1234 ",
-            Driver: new DriverDto("  Luke ", " Skywalker "),
+            Driver: new DriverDto("  Luke ", " Skywalker ", "DFDS-2024546375"),
             Activities:
             [
                 new ActivityDto(ActivityType.Delivery, "dfds-123456 "),
@@ -84,7 +83,7 @@ public class VisitServiceTests
 
         var req = new CreateVisitRequest(
             TruckLicensePlate: " abc 12345 ",
-            Driver: new DriverDto("  Luke ", " Skywalker "),
+            Driver: new DriverDto("  Luke ", " Skywalker ", "DFDS-199854635"),
             Activities:
             [
                 new ActivityDto(ActivityType.Delivery, "dfds-123456 "),
@@ -143,27 +142,47 @@ public class VisitServiceTests
     }
 
     [Fact]
-    public async Task ListVisits_PaginatesAndReturnsItems()
+    public async Task ListVisits_PaginatesAndReturnsFullRecords()
     {
         var repo = Substitute.For<IVisitRepository>();
-        var items = new ReadOnlyCollection<VisitListItem>(
-        [
-            new VisitListItem(Guid.NewGuid(), VisitStatus.PreRegistered, "AB12CD", DateTime.UtcNow),
-            new VisitListItem(Guid.NewGuid(), VisitStatus.AtGate, "EF34GH", DateTime.UtcNow),
-            new VisitListItem(Guid.NewGuid(), VisitStatus.OnSite, "AB12FD", DateTime.UtcNow),
-            new VisitListItem(Guid.NewGuid(), VisitStatus.AtGate, "GF34GH", DateTime.UtcNow)
-        ]);
+        var visit1 = new Visit(
+            new Truck(" AB-12 CD "),
+            new Driver("Gojo", "Satoru", "DFDS-20223547432"),
+            [new Activity(ActivityType.Delivery, " dfds3009 ")],
+            nowUTC: new DateTime(2025, 1, 1, 9, 0, 0, DateTimeKind.Utc),
+            createdBy: "Sukuna");
+
+        var visit2 = new Visit(
+            new Truck(" EF-34 GH "),
+            new Driver("Luke", "Skywalker", "DFDS-20213547328"),
+            [new Activity(ActivityType.Delivery, " dfds3006 ")],
+            nowUTC: new DateTime(2025, 1, 1, 9, 0, 0, DateTimeKind.Utc),
+            createdBy: "Darth");
 
         repo.ListAsync(Arg.Any<PageRequest>(), Arg.Any<CancellationToken>())
-            .Returns(items);
+        .Returns(ci => Task.FromResult<IReadOnlyList<Visit>>([visit2, visit1]));
 
         var service = TestHelpers.Service(repo);
 
-        var result = await service.ListVisitsAsync(page: 2, pageSize: 2);
+        var page = await service.ListVisitsAsync(page: 1, pageSize: 2);
 
-        result.Page.Should().Be(2);
-        result.PageSize.Should().Be(2);
-        result.Count.Should().Be(4);
-        result.Items.Should().BeEquivalentTo(items);
+        page.Page.Should().Be(1);
+        page.PageSize.Should().Be(2);
+        page.Count.Should().Be(2);
+
+        page.Items.Should().HaveCount(2);
+
+        var first = page.Items[0];
+        first.TruckLicensePlate.Should().Be("EF34GH");
+        first.DriverInformation.FirstName.Should().Be("Luke");
+        first.DriverInformation.LastName.Should().Be("Skywalker");
+        first.Activities.Should().ContainSingle(a => a.Type == ActivityType.Collection && a.UnitNumber == "DFDS3006");
+
+        var second = page.Items[1];
+        second.TruckLicensePlate.Should().Be("AB12CD");
+        second.DriverInformation.FirstName.Should().Be("Gojo");
+        second.DriverInformation.LastName.Should().Be("Satoru");
+        second.Activities.Should().ContainSingle(a => a.Type == ActivityType.Delivery && a.UnitNumber == "DFDS009");
+
     }
 }

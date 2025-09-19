@@ -12,7 +12,7 @@ public class ValidatorsTests
         var v = new CreateVisitRequestValidator();
         var req = new CreateVisitRequest(
             TruckLicensePlate: "",
-            Driver: new DriverDto("", ""),
+            Driver: new DriverDto("", "", ""),
             Activities: [],
             Status: null,
             IdempotencyKey: null);
@@ -34,7 +34,7 @@ public class ValidatorsTests
         var req = new CreateVisitRequest(
             TruckLicensePlate: longPlate,
             Status: null,
-            Driver: new DriverDto(new string('a', 129), new string('b', 129)),
+            Driver: new DriverDto(new string('a', 129), new string('b', 129), "DFDS20245768"),
             Activities: [new ActivityDto(ActivityType.Delivery, new string('u', 33))],
             IdempotencyKey: longKey);
 
@@ -64,7 +64,7 @@ public class ValidatorsTests
         var v = new CreateVisitRequestValidator();
         var req = new CreateVisitRequest(
             TruckLicensePlate: "ABC123",
-            Driver: new DriverDto("Luke", "Skywalker"),
+            Driver: new DriverDto("Luke", "Skywalker", "DFDS20245768"),
             Activities: [new ActivityDto(ActivityType.Delivery, "DFDS123456")],
             Status: "OnSite",
             IdempotencyKey: null);
