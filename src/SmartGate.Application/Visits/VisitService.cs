@@ -66,7 +66,8 @@ public sealed class VisitService : IVisitService
         // PII policy to attempt
         var driver = new Driver(
             _pii.SanitizeFirstName(request.Driver.FirstName),
-            _pii.SanitizeLastName(request.Driver.LastName)
+            _pii.SanitizeLastName(request.Driver.LastName),
+            request.Driver.Id
         );
 
         var truck = new Truck(request.TruckLicensePlate);
@@ -87,15 +88,17 @@ public sealed class VisitService : IVisitService
         return Map(visit);
     }
 
-    public async Task<PaginatedResult<VisitListItem>> ListVisitsAsync(int page = 1, int pageSize = 20, CancellationToken ct = default)
+    public async Task<PaginatedResult<VisitResponse>> ListVisitsAsync(int page = 1, int pageSize = 20, CancellationToken ct = default)
     {
         _log.LogDebug($"ListVisits page {page} size {pageSize} by {_user.Subject}");
 
         if (pageSize > 200) pageSize = 200;
 
         var pr = (page < 1 || pageSize < 1) ? PageRequest.Default(page, pageSize) : new PageRequest(page, pageSize);
-        var items = await _repo.ListAsync(pr, ct);
-        return new PaginatedResult<VisitListItem>(pr.Page, pr.PageSize, items.Count, items);
+        var visits = await _repo.ListAsync(pr, ct);
+        var items = visits.Select(Map).ToList();
+
+        return new PaginatedResult<VisitResponse>(pr.Page, pr.PageSize, items.Count, items);
     }
 
     public async Task<VisitResponse> UpdateVisitStatusAsync(UpdateVisitStatusRequest request, CancellationToken ct = default)
@@ -118,7 +121,7 @@ public sealed class VisitService : IVisitService
         var driverInfo = new DriverInformationDto(
             FirstName: v.Driver.FirstName,
             LastName: v.Driver.LastName,
-            Id: v.Driver.Id.ToString()
+            Id: v.Driver.Id
         );
 
         return new VisitResponse(
