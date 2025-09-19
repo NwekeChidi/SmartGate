@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using SmartGate.Domain.Visits;
 
 namespace SmartGate.Application.Visits.Dto;
@@ -22,13 +23,13 @@ public sealed record DriverInformationDto(string FirstName, string LastName, str
 
 public sealed record ActivityResponse(
     Guid Id,
-    ActivityType Type,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] ActivityType Type,
     string UnitNumber
 );
 
 public sealed record VisitResponse(
     Guid Id,
-    VisitStatus Status,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] VisitStatus Status,
     string TruckLicensePlate,
     DriverInformationDto DriverInformation,
     IReadOnlyList<ActivityResponse> Activities,

@@ -28,7 +28,7 @@ public sealed class CompletedIsTerminalException() : DomainException("Visit is a
 {
 }
 
-public sealed class UnitNumberMustStartWithDFDSException() : DomainException("Unit number must start with 'DFDS'.")
+public sealed class UnitNumberMustStartWithDFDSException() : DomainException("UnitNumber must start with 'DFDS'.")
 {
 }
 

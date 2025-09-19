@@ -34,7 +34,7 @@ public class ValidatorsTests
         var req = new CreateVisitRequest(
             TruckLicensePlate: longPlate,
             Status: null,
-            Driver: new DriverDto(new string('a', 129), new string('b', 129), "DFDS20245768"),
+            Driver: new DriverDto(new string('a', 129), new string('b', 129), "DFDS-202457"),
             Activities: [new ActivityDto(ActivityType.Delivery, new string('u', 33))],
             IdempotencyKey: longKey);
 
@@ -64,8 +64,8 @@ public class ValidatorsTests
         var v = new CreateVisitRequestValidator();
         var req = new CreateVisitRequest(
             TruckLicensePlate: "ABC123",
-            Driver: new DriverDto("Luke", "Skywalker", "DFDS20245768"),
-            Activities: [new ActivityDto(ActivityType.Delivery, "DFDS123456")],
+            Driver: new DriverDto("Luke", "Skywalker", "DFDS-202458"),
+            Activities: [new ActivityDto(ActivityType.Delivery, "DFDS-123456")],
             Status: VisitStatus.OnSite,
             IdempotencyKey: null);
 
