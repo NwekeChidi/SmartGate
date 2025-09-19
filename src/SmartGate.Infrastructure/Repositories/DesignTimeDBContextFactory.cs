@@ -9,7 +9,7 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<SmartGateD
     {
         // Use env var SMARTGATE_PG if provided, else default local dev string.
         var cs = Environment.GetEnvironmentVariable("SMARTGATE_PG")
-                 ?? "Host=localhost;Port=5432;Database=smartgate;Username=postgres;Password=postgres";
+                 ?? "Host=localhost;Port=15432;Database=smartgate;Username=postgres;Password=postgres;";
 
         var options = new DbContextOptionsBuilder<SmartGateDbContext>()
             .UseNpgsql(cs)

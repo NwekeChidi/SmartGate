@@ -17,7 +17,6 @@ public class VisitConfiguration : IEntityTypeConfiguration<Visit>
         eb.Property(v => v.CreatedBy).HasMaxLength(128).IsRequired();
         eb.Property(v => v.UpdatedBy).HasMaxLength(128).IsRequired();
 
-        // Owned: Truck
         eb.OwnsOne(v => v.Truck, tb =>
         {
             tb.Property(p => p.LicensePlateRaw)
@@ -35,11 +34,11 @@ public class VisitConfiguration : IEntityTypeConfiguration<Visit>
 
         eb.Property<string>("DriverId").IsRequired();
         eb.HasOne(v => v.Driver)
-            .WithMany() // not tracking back-collection on Driver
+            .WithMany()
             .HasForeignKey("DriverId")
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Relationship to Activities
+
         eb.HasMany(v => v.Activities)
             .WithOne()
             .HasForeignKey("VisitId")

@@ -1,51 +1,55 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Logging;
+using SmartGate.Application.Visits.Ports;
 using SmartGate.Domain.Visits.Entities;
+using SmartGate.Infrastructure.Database;
 
-namespace SmartGate.Infrastructure.Persistence.Setup;
+namespace SmartGate.Infrastructure.Repositories;
 
-public class VisitConfiguration : IEntityTypeConfiguration<Visit>
+public class VisitRepository : IVisitRepository
 {
-    public void Configure(EntityTypeBuilder<Visit> eb)
+    private readonly SmartGateDbContext _db;
+    private readonly ILogger<VisitRepository> _log;
+
+    public VisitRepository(SmartGateDbContext db, ILogger<VisitRepository> log)
     {
-        eb.ToTable("visits");
-        eb.HasKey(v => v.Id);
+        _db = db;
+        _log = log;
+    }
 
-        eb.Property(v => v.Status).HasConversion<int>().IsRequired();
-        eb.Property(v => v.CreatedAtUTC).IsRequired();
-        eb.Property(v => v.UpdatedAtUTC).IsRequired();
-        eb.Property(v => v.CreatedBy).HasMaxLength(128).IsRequired();
-        eb.Property(v => v.UpdatedBy).HasMaxLength(128).IsRequired();
+    public async Task AddAsync(Visit visit, CancellationToken ct)
+    {
+        _log.LogDebug("[EF] Add Visit {VisitId}", visit.Id);
+        await _db.Visits.AddAsync(visit, ct);
+    }
 
-        eb.OwnsOne(v => v.Truck, tb =>
-        {
-            tb.Property(p => p.LicensePlateRaw)
-              .HasColumnName("truck_plate_raw")
-              .HasMaxLength(32)
-              .IsRequired();
+    public async Task<Visit?> GetByIdAsync(Guid id, CancellationToken ct)
+    {
+        _log.LogDebug("[EF] GetById {VisitId}", id);
+        return await _db.Visits
+            .Include(v => v.Driver)
+            .Include(v => v.Activities)
+            .SingleOrDefaultAsync(v => v.Id == id, ct);
+    }
 
-            tb.Property(p => p.LicensePlateNormalized)
-              .HasColumnName("truck_plate_normalized")
-              .HasMaxLength(32)
-              .IsRequired();
+    public async Task<IReadOnlyList<Visit>> ListAsync(PageRequest pageRequest, CancellationToken ct)
+    {
+        var skip = (pageRequest.Page - 1) * pageRequest.PageSize;
+        _log.LogDebug("[EF] List page {Page} size {Size}", pageRequest.Page, pageRequest.PageSize);
 
-            tb.WithOwner();
-        });
+        return await _db.Visits
+        .AsNoTracking()
+        .Include(v => v.Driver)
+        .Include(v => v.Activities)
+        .OrderByDescending(v => v.CreatedAtUTC)
+        .Skip(skip)
+        .Take(pageRequest.PageSize)
+        .ToListAsync(ct);
+    }
 
-        eb.Property<string>("DriverId").IsRequired();
-        eb.HasOne(v => v.Driver)
-            .WithMany()
-            .HasForeignKey("DriverId")
-            .OnDelete(DeleteBehavior.Restrict);
-
-
-        eb.HasMany(v => v.Activities)
-            .WithOne()
-            .HasForeignKey("VisitId")
-            .OnDelete(DeleteBehavior.Cascade);
-
-        eb.HasIndex(v => v.Status);
-        eb.HasIndex(v => v.CreatedAtUTC);
-        eb.HasIndex("DriverId");
+    public Task SaveChangesAsync(CancellationToken ct)
+    {
+        _log.LogDebug("[EF] SaveChanges");
+        return _db.SaveChangesAsync(ct);
     }
 }

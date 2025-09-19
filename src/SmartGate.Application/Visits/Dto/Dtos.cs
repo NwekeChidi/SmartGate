@@ -8,7 +8,7 @@ public sealed record DriverDto(
     string Id
 );
 
-public sealed record ActivityDto(ActivityType Type, string UnitNumberRaw);
+public sealed record ActivityDto(ActivityType Type, string UnitNumber);
 
 public sealed record CreateVisitRequest(
     string TruckLicensePlate,
@@ -28,7 +28,7 @@ public sealed record ActivityResponse(
 
 public sealed record VisitResponse(
     Guid Id,
-    VisitStatus Status,
+    string Status, // expected values: "PreRegistered", "AtGate", "OnSite", "Completed"
     string TruckLicensePlate,
     DriverInformationDto DriverInformation,
     IReadOnlyList<ActivityResponse> Activities,
