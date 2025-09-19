@@ -5,6 +5,7 @@ namespace SmartGate.Domain.Visits.Entities;
 public sealed class Activity
 {
     public const int MaxUnitLength = 10;
+    private const string UnitNumberName = "unitNumber";
     public const string RequiredUnitPrefix = "DFDS";
 
     public Guid Id { get; }
@@ -16,12 +17,12 @@ public sealed class Activity
     {
         UnitNumberNormalized = null!;
         UnitNumberRaw = null!;
-     }
+    }
 
     public Activity(ActivityType type, string unitNumberRaw, Guid? id = null)
     {
         if (string.IsNullOrEmpty(unitNumberRaw))
-            throw new NullReferenceInAggregateException(nameof(unitNumberRaw));
+            throw new NullReferenceInAggregateException(UnitNumberName);
 
         Id = id ?? Guid.NewGuid();
         Type = type;
@@ -30,10 +31,10 @@ public sealed class Activity
         var normalized = Normalization.NormalizePlateOrUnit(unitNumberRaw);
 
         if (string.IsNullOrWhiteSpace(normalized))
-            throw new InvalidIdentifierException(nameof(UnitNumberRaw));
+            throw new InvalidIdentifierException(UnitNumberName);
 
         if (normalized.Length > MaxUnitLength)
-            throw new MaxLengthExceededException(nameof(unitNumberRaw), MaxUnitLength);
+            throw new MaxLengthExceededException(UnitNumberName, MaxUnitLength);
 
         if (!normalized.StartsWith(RequiredUnitPrefix, StringComparison.Ordinal) ||
             normalized.Length <= RequiredUnitPrefix.Length)
