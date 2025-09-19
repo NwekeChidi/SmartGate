@@ -14,7 +14,7 @@ public sealed record CreateVisitRequest(
     string TruckLicensePlate,
     DriverDto Driver,
     IReadOnlyList<ActivityDto> Activities,
-    string? Status,
+    VisitStatus? Status,
     string? IdempotencyKey
 );
 
@@ -28,7 +28,7 @@ public sealed record ActivityResponse(
 
 public sealed record VisitResponse(
     Guid Id,
-    string Status, // expected values: "PreRegistered", "AtGate", "OnSite", "Completed"
+    VisitStatus Status,
     string TruckLicensePlate,
     DriverInformationDto DriverInformation,
     IReadOnlyList<ActivityResponse> Activities,

@@ -30,7 +30,7 @@ public sealed class CreateVisitRequestValidator : AbstractValidator<CreateVisitR
             .When(x => x.IdempotencyKey is not null);
         
         RuleFor(x => x.Status)
-            .Equal(nameof(VisitStatus.PreRegistered))
+            .Equal(VisitStatus.PreRegistered)
             .WithMessage("New visits must have status 'PreRegistered'")
             .When(x => x.Status is not null);
     }

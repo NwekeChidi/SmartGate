@@ -129,12 +129,12 @@ public sealed class VisitService : IVisitService
             v.Status,
             TruckLicensePlate: v.Truck.LicensePlateNormalized,
             DriverInformation: driverInfo,
-            Activities: v.Activities.Select(a =>
+            Activities: [.. v.Activities.Select(a =>
                 new ActivityResponse(
                     a.Id,
                     a.Type,
                     UnitNumber: a.UnitNumberNormalized
-                )).ToList(),
+                ))],
             CreatedAtUtc: v.CreatedAtUTC,
             UpdatedAtUtc: v.UpdatedAtUTC,
             CreatedBy: v.CreatedBy,

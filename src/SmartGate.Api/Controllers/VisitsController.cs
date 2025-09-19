@@ -30,7 +30,7 @@ public sealed class VisitsController : ControllerBase
         }
     }
 
-    [HttpGet]
+    [HttpGet("/")]
     [Authorize(Policy = "VisitsRead")]
     [ProducesResponseType(typeof(PaginatedResult<VisitResponse>), StatusCodes.Status200OK)]
     public async Task<IResult> List([FromQuery] int page = 1, [FromQuery] int pageSize = 50, CancellationToken ct = default)
@@ -46,7 +46,7 @@ public sealed class VisitsController : ControllerBase
         }
     }
 
-    [HttpPatch("{id:guid}/status_update")]
+    [HttpPatch("status_update/{id:guid}")]
     [Authorize(Policy = "VisitsWrite")]
     [ProducesResponseType(typeof(VisitResponse), StatusCodes.Status200OK)]
     public async Task<IResult> UpdateStatus([FromRoute] Guid id, [FromBody] UpdateVisitStatusRequest body, CancellationToken ct)
