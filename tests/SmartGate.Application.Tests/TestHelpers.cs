@@ -4,6 +4,8 @@ using SmartGate.Application.Visits;
 using SmartGate.Application.Visits.Dto;
 using SmartGate.Application.Visits.Ports;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace SmartGate.Application.Tests;
 
@@ -29,14 +31,16 @@ public static class TestHelpers
         IClock? clock = null,
         IUserContext? user = null,
         IIdempotencyStore? idem = null,
-        IPiiPolicy? pii = null) => new VisitService(
+        IPiiPolicy? pii = null,
+        ILogger<VisitService>? log = null) => new VisitService(
             repo,
             CreateValidator(),
             UpdateValidator(),
             clock ?? FixedClock(DateTime.UtcNow),
             pii ?? Pii(),
             idem ?? Idem(),
-            user ?? User()
+            user ?? User(),
+            log ?? NullLogger<VisitService>.Instance
         );
 
     private static T Also<T>(this T obj, Action<T> act) { act(obj); return obj; }
