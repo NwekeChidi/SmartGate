@@ -10,6 +10,7 @@ using SmartGate.Application.Visits.Dto;
 using SmartGate.Application.Visits.Ports;
 using SmartGate.Infrastructure.Database;
 using SmartGate.Infrastructure.Repositories;
+using System.Text.Json.Serialization;
 using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,7 @@ builder.Services.AddScoped<IIdempotencyStore, EfIdempotencyStore>();
 builder.Services.AddScoped<IValidator<CreateVisitRequest>, CreateVisitRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateVisitStatusRequest>, UpdateVisitStatusRequestValidator>();
 builder.Services.AddScoped<IVisitService, VisitService>();
+builder.Services.AddScoped<IDriverRepository, DriverRepository>();
 
 // Auth
 var useDev = builder.Configuration.GetValue<bool>("Auth:UseDevAuth");
@@ -83,9 +85,9 @@ builder.Services.AddAuthorization(options =>
 // Controllers + ProblemDetails + Swagger
 builder.Services.AddControllers().AddJsonOptions(o =>
 {
-    o.JsonSerializerOptions.PropertyNamingPolicy = null; // keep case for TruckLicencePlate & DriverInformation
+    o.JsonSerializerOptions.PropertyNamingPolicy = null;
 });
-builder.Services.AddProblemDetails(); // used by our exception mapping
+builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -108,6 +110,15 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddControllers().AddJsonOptions(o =>
+{
+    o.JsonSerializerOptions.PropertyNamingPolicy = null;
+    o.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter(allowIntegerValues: false));
+    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    o.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+});
+
 // Rate limiting (simple fixed-window)
 var perMinute = builder.Configuration.GetValue("RateLimiting:PermitPerMinute", 120);
 builder.Services.AddRateLimiter(_ => _
@@ -116,7 +127,7 @@ builder.Services.AddRateLimiter(_ => _
         options.PermitLimit = perMinute;
         options.Window = TimeSpan.FromMinutes(1);
         options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-        options.QueueLimit = perMinute; // allow queue equal to limit
+        options.QueueLimit = perMinute;
     }));
 
 // Health checks
