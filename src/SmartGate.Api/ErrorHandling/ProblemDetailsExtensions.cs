@@ -32,7 +32,7 @@ public static class ProblemDetailsExtensions
                 pd.Title = "Validation failed";
                 pd.Detail = "One or more fields are invalid.";
                 pd.Status = StatusCodes.Status400BadRequest;
-                pd.Extensions["errors"] = vex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                pd.Extensions["errors"] = vex.Errors.Select(e => new { field = e.PropertyName, message = e.ErrorMessage });
                 break;
             
             case DuplicateRequestException dupEx:
