@@ -12,6 +12,8 @@ using SmartGate.Infrastructure.Database;
 using SmartGate.Infrastructure.Repositories;
 using System.Text.Json.Serialization;
 using FluentValidation;
+using SmartGate.Api.ErrorHandling;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,9 +38,9 @@ builder.Services.AddScoped<IPiiPolicy, PassthroughPiiPolicy>();
 builder.Services.AddScoped<IVisitRepository, VisitRepository>();
 builder.Services.AddScoped<IIdempotencyStore, EfIdempotencyStore>();
 builder.Services.AddScoped<IValidator<CreateVisitRequest>, CreateVisitRequestValidator>();
-builder.Services.AddScoped<IValidator<UpdateVisitStatusRequest>, UpdateVisitStatusRequestValidator>();
 builder.Services.AddScoped<IVisitService, VisitService>();
 builder.Services.AddScoped<IDriverRepository, DriverRepository>();
+builder.Services.AddSingleton<ProblemDetailsFactory, FlatErrorsProblemDetailsFactory>();
 
 // Auth
 var useDev = builder.Configuration.GetValue<bool>("Auth:UseDevAuth");
@@ -74,18 +76,20 @@ else
 }
 
 // Authorization policies
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("VisitsRead", policy =>
-        policy.RequireAssertion(ctx => Policies.HasScopeOrRole(ctx.User, Policies.ReadScope)));
-    options.AddPolicy("VisitsWrite", policy =>
+builder.Services.AddAuthorizationBuilder()
+                             .AddPolicy("VisitsRead", policy =>
+        policy.RequireAssertion(ctx => Policies.HasScopeOrRole(ctx.User, Policies.ReadScope)))
+                             .AddPolicy("VisitsWrite", policy =>
         policy.RequireAssertion(ctx => Policies.HasScopeOrRole(ctx.User, Policies.WriteScope)));
-});
 
 // Controllers + ProblemDetails + Swagger
 builder.Services.AddControllers().AddJsonOptions(o =>
 {
     o.JsonSerializerOptions.PropertyNamingPolicy = null;
+    o.JsonSerializerOptions.Converters.Insert(0, new StringEnumConverterFactory());
+    o.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter(allowIntegerValues: false));
+    o.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 });
 builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
@@ -110,14 +114,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddControllers().AddJsonOptions(o =>
-{
-    o.JsonSerializerOptions.PropertyNamingPolicy = null;
-    o.JsonSerializerOptions.Converters.Add(
-            new JsonStringEnumConverter(allowIntegerValues: false));
-    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    o.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-});
+
 
 // Rate limiting (simple fixed-window)
 var perMinute = builder.Configuration.GetValue("RateLimiting:PermitPerMinute", 120);
