@@ -2,7 +2,7 @@ using FluentValidation.TestHelper;
 using SmartGate.Application.Visits.Dto;
 using SmartGate.Domain.Visits;
 
-namespace SmartGate.Application.UnitTests;
+namespace SmartGate.Application.Tests;
 
 public class ValidatorsTests
 {
@@ -44,15 +44,6 @@ public class ValidatorsTests
         result.ShouldHaveValidationErrorFor("Driver.LastName");
         result.ShouldHaveValidationErrorFor("Activities[0].UnitNumberRaw");
         result.ShouldHaveValidationErrorFor(x => x.IdempotencyKey);
-    }
-
-    [Fact]
-    public void UpdateVisitStatusRequestValidator_Validates()
-    {
-        var v = new UpdateVisitStatusRequestValidator();
-
-        var ok = new UpdateVisitStatusRequest(VisitStatus.OnSite);
-        v.TestValidate(ok).ShouldNotHaveAnyValidationErrors();
     }
 
     [Fact]

@@ -16,7 +16,6 @@ public static class TestHelpers
     public static IPiiPolicy Pii() => new PassthroughPiiPolicy();
 
     public static IValidator<CreateVisitRequest> CreateValidator() => new CreateVisitRequestValidator();
-    public static IValidator<UpdateVisitStatusRequest> UpdateValidator() => new UpdateVisitStatusRequestValidator();
 
     public static IIdempotencyStore Idem(bool reserved = true)
     {
@@ -38,7 +37,6 @@ public static class TestHelpers
         ILogger<VisitService>? log = null) => new(
             repo,
             CreateValidator(),
-            UpdateValidator(),
             clock ?? FixedClock(DateTime.UtcNow),
             pii ?? Pii(),
             idem ?? Idem(),
