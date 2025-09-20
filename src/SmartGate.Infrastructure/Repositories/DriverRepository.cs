@@ -6,16 +6,10 @@ using SmartGate.Infrastructure.Database;
 
 namespace SmartGate.Infrastructure.Repositories;
 
-public sealed class DriverRepository : IDriverRepository
+public sealed class DriverRepository(SmartGateDbContext db, ILogger<DriverRepository> log) : IDriverRepository
 {
-    private readonly SmartGateDbContext _db;
-    private readonly ILogger<DriverRepository> _log;
-
-    public DriverRepository(SmartGateDbContext db, ILogger<DriverRepository> log)
-    {
-        _db = db;
-        _log = log;
-    }
+    private readonly SmartGateDbContext _db = db;
+    private readonly ILogger<DriverRepository> _log = log;
 
     public async Task<Driver?> GetByIdAsync(string id, CancellationToken ct)
     {

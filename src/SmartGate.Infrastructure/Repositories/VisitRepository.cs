@@ -6,16 +6,10 @@ using SmartGate.Infrastructure.Database;
 
 namespace SmartGate.Infrastructure.Repositories;
 
-public class VisitRepository : IVisitRepository
+public class VisitRepository(SmartGateDbContext db, ILogger<VisitRepository> log) : IVisitRepository
 {
-    private readonly SmartGateDbContext _db;
-    private readonly ILogger<VisitRepository> _log;
-
-    public VisitRepository(SmartGateDbContext db, ILogger<VisitRepository> log)
-    {
-        _db = db;
-        _log = log;
-    }
+    private readonly SmartGateDbContext _db = db;
+    private readonly ILogger<VisitRepository> _log = log;
 
     public async Task AddAsync(Visit visit, CancellationToken ct)
     {
