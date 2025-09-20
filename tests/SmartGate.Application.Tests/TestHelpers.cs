@@ -20,9 +20,9 @@ public static class TestHelpers
     public static IIdempotencyStore Idem(bool reserved = true)
     {
         var s = Substitute.For<IIdempotencyStore>();
-        s.TryReserveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        s.TryReserveAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(reserved);
-        s.CompleteAsync(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        s.CompleteAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
         return s;
     }

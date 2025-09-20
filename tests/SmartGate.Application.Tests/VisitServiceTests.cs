@@ -89,7 +89,7 @@ public class VisitServiceTests
                 new ActivityDto(ActivityType.Collection, " dfds-654321")
             ],
             Status: VisitStatus.PreRegistered,
-            IdempotencyKey: "idem-key-1"
+            IdempotencyKey: Guid.NewGuid()
         );
 
         var response = await service.CreateVisitAsync(req);

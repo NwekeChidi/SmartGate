@@ -29,14 +29,13 @@ public class ValidatorsTests
     {
         var v = new CreateVisitRequestValidator();
         var longPlate = new string('P', 33);
-        var longKey = new string('K', 129);
 
         var req = new CreateVisitRequest(
             TruckLicensePlate: longPlate,
             Status: VisitStatus.PreRegistered,
             Driver: new DriverDto(new string('a', 129), new string('b', 129), "DFDS-202457"),
             Activities: [new ActivityDto(ActivityType.Delivery, new string('u', 33))],
-            IdempotencyKey: longKey);
+            IdempotencyKey: Guid.Empty);
 
         var result = v.TestValidate(req);
         result.ShouldHaveValidationErrorFor(x => x.TruckLicensePlate);
