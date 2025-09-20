@@ -141,7 +141,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapHealthChecks("/health/live");
+app.MapHealthChecks("/health");
 
 app.MapControllers();
 
