@@ -15,7 +15,7 @@ public sealed record CreateVisitRequest(
     string TruckLicensePlate,
     DriverDto Driver,
     IReadOnlyList<ActivityDto> Activities,
-    VisitStatus? Status,
+    VisitStatus Status,
     string? IdempotencyKey
 );
 
