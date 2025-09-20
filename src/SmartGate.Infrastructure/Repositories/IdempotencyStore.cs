@@ -22,12 +22,12 @@ public class IdempotencyStore(SmartGateDbContext db, ILogger<IdempotencyStore> l
                 CreatedAtUTC = DateTime.UtcNow
             });
             await _db.SaveChangesAsync(ct);
-            _log.LogDebug($"Idempotency reserved {key}");
+            _log.LogDebug($"[EF] Idempotency reserved {key}");
             return true;
         }
         catch (DbUpdateException)
         {
-            _log.LogDebug("Idempotency reservation failed; duplicate key {Key}", key);
+            _log.LogDebug("[EF] Idempotency reservation failed; duplicate key {Key}", key);
             return false;
         }
     }
@@ -49,6 +49,6 @@ public class IdempotencyStore(SmartGateDbContext db, ILogger<IdempotencyStore> l
             row.VisitId = visitId;
         }
         await _db.SaveChangesAsync(ct);
-        _log.LogDebug($"Idempotency completed {key} -> Visit {visitId}");
+        _log.LogDebug($"[EF] Idempotency completed {key} -> Visit {visitId}");
     }
 }
