@@ -17,11 +17,11 @@ public sealed class VisitsController : ControllerBase
     [HttpPost("create")]
     [Authorize(Policy = "VisitsWrite")]
     [ProducesResponseType(typeof(VisitResponse), StatusCodes.Status201Created)]
-    public async Task<IResult> Create([FromBody] CreateVisitRequest request, CancellationToken ct)
+    public async Task<IResult> Create([FromBody] CreateVisitRequest body, CancellationToken ct)
     {
         try
         {
-            var res = await _svc.CreateVisitAsync(request, ct);
+            var res = await _svc.CreateVisitAsync(body, ct);
             return Results.Created($"/v1/visits/{res.Id}", res);
         }
         catch (Exception ex)
