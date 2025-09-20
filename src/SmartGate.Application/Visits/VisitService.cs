@@ -11,7 +11,6 @@ public sealed class VisitService : IVisitService
 {
     private readonly IVisitRepository _repo;
     private readonly IValidator<CreateVisitRequest> _createValidator;
-    private readonly IValidator<UpdateVisitStatusRequest> _statusValidator;
     private readonly IClock _clock;
     private readonly IPiiPolicy _pii;
     private readonly IIdempotencyStore _idem;
@@ -21,7 +20,6 @@ public sealed class VisitService : IVisitService
     public VisitService(
         IVisitRepository repo,
         IValidator<CreateVisitRequest> createValidator,
-        IValidator<UpdateVisitStatusRequest> statusValidator,
         IClock clock,
         IPiiPolicy pii,
         IIdempotencyStore idem,
@@ -31,7 +29,6 @@ public sealed class VisitService : IVisitService
     {
         _repo = repo;
         _createValidator = createValidator;
-        _statusValidator = statusValidator;
         _clock = clock;
         _pii = pii;
         _idem = idem;
@@ -101,8 +98,6 @@ public sealed class VisitService : IVisitService
 
     public async Task<VisitResponse> UpdateVisitStatusAsync(UpdateVisitStatusRequest request, Guid VisitId, CancellationToken ct = default)
     {
-        await _statusValidator.ValidateAndThrowAsync(request, ct);
-
         var visit = await _repo.GetByIdAsync(VisitId, ct)
             ?? throw new KeyNotFoundException("Visit not found.");
 
