@@ -1,14 +1,13 @@
 using FluentAssertions;
 using NSubstitute;
 using SmartGate.Application.Abstractions;
-using SmartGate.Application.Tests;
 using SmartGate.Application.Visits.Dto;
 using SmartGate.Application.Visits.Ports;
 using SmartGate.Domain.Tests;
 using SmartGate.Domain.Visits;
 using SmartGate.Domain.Visits.Entities;
 
-namespace SmartGate.Application.UnitTests;
+namespace SmartGate.Application.Tests;
 
 public class VisitServiceTests
 {
