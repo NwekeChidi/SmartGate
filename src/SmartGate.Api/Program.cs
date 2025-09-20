@@ -27,7 +27,7 @@ builder.Services.AddDbContext<SmartGateDbContext>(o =>
     var cs = builder.Configuration.GetConnectionString("Postgres");
     o.UseNpgsql(cs)
      .EnableDetailedErrors()
-     .EnableSensitiveDataLogging(); // dev only
+     .EnableSensitiveDataLogging();
 });
 
 // DI: Application + Infra
@@ -36,7 +36,7 @@ builder.Services.AddScoped<IUserContext, HttpUserContext>();
 builder.Services.AddScoped<IClock, SystemClock>();
 builder.Services.AddScoped<IPiiPolicy, PassthroughPiiPolicy>();
 builder.Services.AddScoped<IVisitRepository, VisitRepository>();
-builder.Services.AddScoped<IIdempotencyStore, EfIdempotencyStore>();
+builder.Services.AddScoped<IIdempotencyStore, IdempotencyStore>();
 builder.Services.AddScoped<IValidator<CreateVisitRequest>, CreateVisitRequestValidator>();
 builder.Services.AddScoped<IVisitService, VisitService>();
 builder.Services.AddScoped<IDriverRepository, DriverRepository>();

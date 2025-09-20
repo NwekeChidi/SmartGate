@@ -6,16 +6,10 @@ using SmartGate.Infrastructure.Database.Setup;
 
 namespace SmartGate.Infrastructure.Repositories;
 
-public class EfIdempotencyStore : IIdempotencyStore
+public class IdempotencyStore(SmartGateDbContext db, ILogger<IdempotencyStore> log) : IIdempotencyStore
 { 
-    private readonly SmartGateDbContext _db;
-    private readonly ILogger<EfIdempotencyStore> _log;
-
-    public EfIdempotencyStore(SmartGateDbContext db, ILogger<EfIdempotencyStore> log)
-    {
-        _db = db;
-        _log = log;
-    }
+    private readonly SmartGateDbContext _db = db;
+    private readonly ILogger<IdempotencyStore> _log = log;
 
     public async Task<bool> TryReserveAsync(Guid key, CancellationToken ct)
     {
