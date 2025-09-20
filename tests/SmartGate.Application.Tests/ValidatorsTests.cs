@@ -14,7 +14,7 @@ public class ValidatorsTests
             TruckLicensePlate: "",
             Driver: new DriverDto("", "", ""),
             Activities: [],
-            Status: null,
+            Status: VisitStatus.PreRegistered,
             IdempotencyKey: null);
 
         var result = v.TestValidate(req);
@@ -33,7 +33,7 @@ public class ValidatorsTests
 
         var req = new CreateVisitRequest(
             TruckLicensePlate: longPlate,
-            Status: null,
+            Status: VisitStatus.PreRegistered,
             Driver: new DriverDto(new string('a', 129), new string('b', 129), "DFDS-202457"),
             Activities: [new ActivityDto(ActivityType.Delivery, new string('u', 33))],
             IdempotencyKey: longKey);

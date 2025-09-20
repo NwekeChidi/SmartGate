@@ -36,7 +36,7 @@ public class VisitServiceTests
                 new ActivityDto(ActivityType.Delivery, "dfds-123456 "),
                 new ActivityDto(ActivityType.Collection, " dfds-654321")
             ],
-            Status: null,
+            Status: VisitStatus.PreRegistered,
             IdempotencyKey: null
         );
 
@@ -89,7 +89,7 @@ public class VisitServiceTests
                 new ActivityDto(ActivityType.Delivery, "dfds-123456 "),
                 new ActivityDto(ActivityType.Collection, " dfds-654321")
             ],
-            Status: null,
+            Status: VisitStatus.PreRegistered,
             IdempotencyKey: "idem-key-1"
         );
 
