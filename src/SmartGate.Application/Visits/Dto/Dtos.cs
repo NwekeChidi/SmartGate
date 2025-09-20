@@ -16,7 +16,7 @@ public sealed record CreateVisitRequest(
     DriverDto Driver,
     IReadOnlyList<ActivityDto> Activities,
     VisitStatus Status,
-    string? IdempotencyKey
+    Guid? IdempotencyKey
 );
 
 public sealed record DriverInformationDto(string FirstName, string LastName, string Id);

@@ -17,7 +17,7 @@ public class EfIdempotencyStore : IIdempotencyStore
         _log = log;
     }
 
-    public async Task<bool> TryReserveAsync(string key, CancellationToken ct)
+    public async Task<bool> TryReserveAsync(Guid key, CancellationToken ct)
     {
         try
         {
@@ -38,7 +38,7 @@ public class EfIdempotencyStore : IIdempotencyStore
         }
     }
 
-    public async Task CompleteAsync(string key, Guid visitId, CancellationToken ct)
+    public async Task CompleteAsync(Guid key, Guid visitId, CancellationToken ct)
     {
         var row = await _db.IdempotencyKeys.FirstOrDefaultAsync(x => x.Key == key, ct);
         if (row is null)

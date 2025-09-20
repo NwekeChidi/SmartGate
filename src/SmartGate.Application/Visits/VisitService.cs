@@ -45,9 +45,9 @@ public sealed class VisitService : IVisitService
 
         // Idempotency
         var key = request.IdempotencyKey;
-        if (!string.IsNullOrWhiteSpace(key))
+        if (key.HasValue && key.Value != Guid.Empty)
         {
-            var reserved = await _idem.TryReserveAsync(key!, ct);
+            var reserved = await _idem.TryReserveAsync(key.Value, ct);
             if (!reserved)
                 throw new DuplicateRequestException($"A request with IdempotencyKey '{key}' already exists.");
         }
@@ -76,8 +76,8 @@ public sealed class VisitService : IVisitService
         await _repo.AddAsync(visit, ct);
         await _repo.SaveChangesAsync(ct);
 
-        if (!string.IsNullOrWhiteSpace(key))
-            await _idem.CompleteAsync(key!, visit.Id, ct);
+        if (key.HasValue && key.Value != Guid.Empty)
+            await _idem.CompleteAsync(key.Value, visit.Id, ct);
 
          _log.LogInformation($"Visit {visit.Id} created at {visit.CreatedAtUTC} by {_user.Subject}");
         return Map(visit);
