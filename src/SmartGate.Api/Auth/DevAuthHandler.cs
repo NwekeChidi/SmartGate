@@ -6,14 +6,10 @@ using Microsoft.Extensions.Options;
 namespace SmartGate.Api.Auth;
 
 public class DevAuthOptions : AuthenticationSchemeOptions { }
-
-public sealed class DevAuthHandler : AuthenticationHandler<DevAuthOptions>
+public sealed class DevAuthHandler(IOptionsMonitor<DevAuthOptions> options, ILoggerFactory logger,
+    UrlEncoder encoder) : AuthenticationHandler<DevAuthOptions>(options, logger, encoder)
 {
     public new const string Scheme = "Dev";
-
-    [Obsolete]
-    public DevAuthHandler(IOptionsMonitor<DevAuthOptions> options, ILoggerFactory logger,
-        UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock) { }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
