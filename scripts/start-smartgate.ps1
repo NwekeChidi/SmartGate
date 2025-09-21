@@ -29,14 +29,14 @@ $envConfig = @{
   uat = @{
     Database = "smartgate_uat"
     ConnString = "Host=localhost;Port=15432;Database=smartgate_uat;Username=postgres;Password=postgres"
-    Authority = "SmartGate-UAT"
-    SigningKey = "uat-256-bit-secret-key-here-must-be-at-least-32-chars"
+    Authority = "SmartGate"
+    SigningKey = "SmartGate-Solutions-256-bit-secret-key-here-must-be-at-least-32-chars"
   }
   production = @{
     Database = "smartgate_prod"
     ConnString = "Host=localhost;Port=15432;Database=smartgate_prod;Username=postgres;Password=postgres"
     Authority = "SmartGate"
-    SigningKey = "production-256-bit-secret-key-here-must-be-at-least-32-chars"
+    SigningKey = "SmartGate-Solutions-256-bit-secret-key-here-must-be-at-least-32-chars"
   }
 }
 

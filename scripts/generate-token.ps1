@@ -14,7 +14,7 @@ param(
   [Parameter(Mandatory=$true)]
   [string]$Principal,
   
-  [string]$SigningKey = "your-256-bit-secret-key-here-must-be-at-least-32-chars",
+  [string]$SigningKey = "SmartGate-Solutions-256-bit-secret-key-here-must-be-at-least-32-chars",
   [string]$Issuer = "SmartGate",
   [string]$Audience = "SmartGate.Api",
   [int]$ExpiryHours = 24
@@ -42,12 +42,13 @@ function New-JwtToken {
   
   # JWT Payload
   $payload = @{
-    sub = $Subject
-    scope = $Scope
-    iss = $Issuer
-    aud = $Audience
-    iat = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
-    exp = [DateTimeOffset]::new($Expiry.ToUniversalTime()).ToUnixTimeSeconds()
+    "sub" = $Subject
+    "name" = $Subject
+    "scope" = $Scope
+    "iss" = $Issuer
+    "aud" = $Audience
+    "iat" = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+    "exp" = [DateTimeOffset]::new($Expiry.ToUniversalTime()).ToUnixTimeSeconds()
   } | ConvertTo-Json -Compress
   
   # Base64Url encode
