@@ -68,11 +68,22 @@ public class GuardClauseSpecs
     public void Invalid_driverId_rejected()
     {
         var driver1 = () => new Driver("Ok", "Ok", "abc-202034");
-        var driver2 = () => new Driver("Ok", "Ok", "dfds202456");
-        var driver3 = () => new Driver("Ok", "Ok", "dfds-2024567890123");
+        var driver2 = () => new Driver("Ok", "Ok", "dfds-2024567890123");
+        var driver3 = () => new Driver("Ok", "Ok", "dfds-");
+        var driver4 = () => new Driver("Ok", "Ok", "dfds-202/*---");
 
         driver1.Should().Throw<InvalidDriverIdException>();
-        driver2.Should().Throw<InvalidDriverIdException>();
-        driver3.Should().Throw<MaxLengthExceededException>();
+        driver2.Should().Throw<MaxLengthExceededException>();
+        driver3.Should().Throw<InvalidDriverIdException>();
+        driver4.Should().Throw<InvalidDriverIdException>();
+    }
+
+    [Fact]
+    public void Empty_or_whitespace_driver_names_rejected()
+    {
+        var driver1 = () => new Driver("    ", "  OK", "dfds-202034");
+        var driver2 = () => new Driver("OK", "    ", "dfds-202034");
+        driver1.Should().Throw<NullReferenceInAggregateException>();
+        driver2.Should().Throw<NullReferenceInAggregateException>();
     }
 }

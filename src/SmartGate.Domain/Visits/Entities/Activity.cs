@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using SmartGate.Domain.Common;
 
 namespace SmartGate.Domain.Visits.Entities;
@@ -13,6 +14,7 @@ public sealed class Activity
     public string UnitNumberRaw { get; }
     public string UnitNumberNormalized { get; }
 
+    [ExcludeFromCodeCoverage]
     private Activity()
     {
         UnitNumberNormalized = null!;

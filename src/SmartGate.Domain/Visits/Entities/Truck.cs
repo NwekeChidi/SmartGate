@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using SmartGate.Domain.Common;
 
 namespace SmartGate.Domain.Visits.Entities;
@@ -9,6 +10,7 @@ public sealed class Truck
     public string LicensePlateRaw { get; }
     public string LicensePlateNormalized { get; }
 
+    [ExcludeFromCodeCoverage]
     public Truck()
     {
         LicensePlateRaw = null!;

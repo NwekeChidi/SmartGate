@@ -27,7 +27,7 @@ public sealed partial class CreateVisitRequestValidator : AbstractValidator<Crea
         RuleFor(x => x.Driver.Id)
             .NotEmpty()
             .Must(DriverIdRegex.IsMatch)
-            .WithMessage("Driver.Id must match pattern DFDS-<1..11 alphanumeric characters>.");
+            .WithMessage("Driver.Id must match pattern DFDS-<1..11 numeric characters>.");
 
         RuleFor(x => x.Activities).NotNull().Must(activity => activity.Count > 0).WithMessage("At least one activity is required");
         RuleForEach(x => x.Activities).ChildRules(activity =>

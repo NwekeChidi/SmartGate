@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using SmartGate.Domain.Common;
 namespace SmartGate.Domain.Visits.Entities;
 
@@ -10,6 +11,7 @@ public sealed class Driver
     public string FirstName { get; }
     public string LastName { get; }
 
+    [ExcludeFromCodeCoverage]
     private Driver()
     {
         Id = null!;
@@ -43,17 +45,15 @@ public sealed class Driver
             throw new InvalidDriverIdException("DriverId must start with DFDS-.");
 
         if (up.Length <= DriverIdPrefix.Length)
-            throw new InvalidDriverIdException("DriverId must include 11 alphanumeric characters after DFDS-.");
+            throw new InvalidDriverIdException("DriverId must include 11 numeric characters after DFDS-.");
 
         if (up.Length > MaxDriverIdLength)
             throw new MaxLengthExceededException(nameof(Id), MaxDriverIdLength);
 
         var suffix = up.Substring(DriverIdPrefix.Length);
-        if (!suffix.All(char.IsLetterOrDigit))
-            throw new InvalidDriverIdException("DriverId suffix must be alphanumeric (A–Z, 0–9).");
+        if (!suffix.All(char.IsDigit))
+            throw new InvalidDriverIdException("DriverId suffix must be numeric (0–9).");
 
         return up;
     }
-
-    public override string ToString() => $"{FirstName} {LastName}";
 }

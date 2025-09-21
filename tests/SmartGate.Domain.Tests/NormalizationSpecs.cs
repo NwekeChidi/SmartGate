@@ -52,6 +52,13 @@ public class NormalizationSpecs
     }
 
     [Fact]
+    public void Empty_normalized_license_plate_rejected()
+    {
+        var act = () => TestData.Truck("  ---/// ");
+        act.Should().Throw<InvalidIdentifierException>();
+    }
+
+    [Fact]
     public void Oversized_unit_number_rejected()
     {
         var tooLong = new string('Y', Activity.MaxUnitLength + 1);
