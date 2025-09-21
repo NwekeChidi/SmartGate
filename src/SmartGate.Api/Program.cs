@@ -34,6 +34,7 @@ builder.Services.AddDbContext<SmartGateDbContext>(o =>
 
 // DI: Application + Infra
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IUserContext, HttpUserContext>();
 builder.Services.AddScoped<IClock, SystemClock>();
 builder.Services.AddScoped<IPiiPolicy, PassthroughPiiPolicy>();
