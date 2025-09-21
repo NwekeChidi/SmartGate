@@ -12,6 +12,7 @@ public sealed class FlatErrorsProblemDetailsFactory : ProblemDetailsFactory
     public override ProblemDetails CreateProblemDetails(HttpContext httpContext, int? statusCode = null,
         string? title = null, string? type = null, string? detail = null, string? instance = null)
     {
+        ArgumentNullException.ThrowIfNull(httpContext);
         var pd = new ProblemDetails
         {
             Status = statusCode ?? StatusCodes.Status500InternalServerError,
@@ -28,6 +29,7 @@ public sealed class FlatErrorsProblemDetailsFactory : ProblemDetailsFactory
         ModelStateDictionary modelStateDictionary, int? statusCode = null, string? title = null,
         string? type = null, string? detail = null, string? instance = null)
     {
+        ArgumentNullException.ThrowIfNull(httpContext);
         var vpd = new ValidationProblemDetails
         {
             Status = statusCode ?? StatusCodes.Status400BadRequest,
@@ -36,7 +38,18 @@ public sealed class FlatErrorsProblemDetailsFactory : ProblemDetailsFactory
             Detail = detail,
             Instance = instance ?? httpContext.Request.Path
         };
-        var errors = modelStateDictionary
+        var errors = TransformModelStateErrors(modelStateDictionary);
+
+        vpd.Extensions["errors"] = errors;
+        vpd.Extensions["traceId"] = Activity.Current?.Id ?? httpContext.TraceIdentifier;
+
+        vpd.Errors.Clear();
+        return vpd;
+    }
+
+    private static List<object> TransformModelStateErrors(ModelStateDictionary modelStateDictionary)
+    {
+        return modelStateDictionary
             .Where(kv => kv.Value?.Errors?.Count > 0)
             .SelectMany(kv =>
                 kv.Value!.Errors.Select(e => new
@@ -47,12 +60,7 @@ public sealed class FlatErrorsProblemDetailsFactory : ProblemDetailsFactory
                         : e.ErrorMessage
                 }))
             .Where(e => !string.Equals(e.field, "body", StringComparison.OrdinalIgnoreCase))
+            .Cast<object>()
             .ToList();
-
-        vpd.Extensions["errors"] = errors;
-        vpd.Extensions["traceId"] = Activity.Current?.Id ?? httpContext.TraceIdentifier;
-
-        vpd.Errors.Clear();
-        return vpd;
     }
 }
