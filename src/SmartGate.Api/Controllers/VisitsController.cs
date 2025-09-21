@@ -31,7 +31,7 @@ public sealed class VisitsController : ControllerBase
         }
     }
 
-    [HttpGet("/")]
+    [HttpGet]
     [Authorize(Policy = AppConstants.Policies.Visits.Read)]
     [ProducesResponseType(typeof(PaginatedResult<VisitResponse>), StatusCodes.Status200OK)]
     public async Task<IResult> List([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
