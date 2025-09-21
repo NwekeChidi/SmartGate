@@ -14,7 +14,7 @@ SmartGate is a visit management system designed for tracking truck visits throug
 - **ORM**: Entity Framework Core 8.0.20
 - **Authentication**: JWT Bearer tokens
 - **Validation**: FluentValidation 11.*
-- **Testing**: xUnit with comprehensive unit and integration tests
+- **Testing**: xUnit with NSubstitute for comprehensive unit tests
 - **Documentation**: Swagger/OpenAPI
 
 ## Project Structure
