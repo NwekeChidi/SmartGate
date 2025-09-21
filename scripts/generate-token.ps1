@@ -84,20 +84,14 @@ try {
   Write-Host "  Scopes: $scopes" -ForegroundColor Yellow
   Write-Host "  Expires: $expiry" -ForegroundColor Yellow
   
-  Write-Step "JWT Bearer Token:"
-  Write-Host $token -ForegroundColor Green
-  
-  Write-Step "Use this Authorization header:"
-  Write-Host "Authorization: Bearer $token" -ForegroundColor Cyan
-  
   Write-Step "Configuration required:"
   Write-Host "Set Auth:UseDevAuth=false in appsettings.json" -ForegroundColor Yellow
   Write-Host "Set Jwt:SigningKey=$SigningKey in appsettings.json" -ForegroundColor Yellow
   Write-Host "Set Jwt:Authority=$Issuer in appsettings.json" -ForegroundColor Yellow
   Write-Host "Set Jwt:Audience=$Audience in appsettings.json" -ForegroundColor Yellow
-  
-  Write-Step "Example curl command:"
-  Write-Host "curl -H `"Authorization: Bearer $token`" http://localhost:5000/v1/visits" -ForegroundColor Magenta
+
+  Write-Step "Your JWT Bearer Token:"
+  Write-Host $token -ForegroundColor Green
 }
 catch {
   Write-Error $_.Exception.Message
