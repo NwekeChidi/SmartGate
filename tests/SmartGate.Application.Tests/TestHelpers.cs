@@ -11,7 +11,7 @@ namespace SmartGate.Application.Tests;
 
 public static class TestHelpers
 {
-    public static IClock FixedClock(DateTime utc) => Substitute.For<IClock>().Also(c => c.UTCNow.Returns(utc));
+    public static IClock FixedClock(DateTime utc) => Substitute.For<IClock>().Also(c => c.UtcNow.Returns(utc));
     public static IUserContext User(string subject = "Obi-wan Kenobi") => Substitute.For<IUserContext>().Also(u => u.Subject.Returns(subject));
     public static IPiiPolicy Pii() => new PassthroughPiiPolicy();
 

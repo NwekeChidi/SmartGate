@@ -120,7 +120,7 @@ public class VisitServiceTests
         repo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(visit);
         repo.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
 
-        clock.UTCNow.Returns(updatedTime);
+        clock.UtcNow.Returns(updatedTime);
         var service = TestHelpers.Service(repo, clock, user);
 
         var req = new UpdateVisitStatusRequest(VisitStatus.AtGate);

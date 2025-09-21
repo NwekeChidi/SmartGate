@@ -4,11 +4,11 @@ namespace SmartGate.Application.Abstractions;
 
 public interface IClock
 {
-    DateTime UTCNow { get; }
+    DateTime UtcNow { get; }
 }
 
 [ExcludeFromCodeCoverage]
 public sealed class SystemClock : IClock
 {
-    public DateTime UTCNow => DateTime.UtcNow;
+    public DateTime UtcNow => DateTime.UtcNow;
 }

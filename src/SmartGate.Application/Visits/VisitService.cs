@@ -70,7 +70,7 @@ public sealed class VisitService : IVisitService
             .Select(a => new Activity(a.Type, a.UnitNumber))
             .ToList();
 
-        var now = _clock.UTCNow;
+        var now = _clock.UtcNow;
         var visit = new Visit(truck, driver, activities, createdBy: _user.Subject, nowUTC: now);
 
         await _repo.AddAsync(visit, ct);
@@ -102,7 +102,7 @@ public sealed class VisitService : IVisitService
             ?? throw new KeyNotFoundException("Visit not found.");
 
         var from = visit.Status;
-        visit.UpdateStatus(request.NewStatus, _user.Subject, _clock.UTCNow);
+        visit.UpdateStatus(request.NewStatus, _user.Subject, _clock.UtcNow);
 
         await _repo.SaveChangesAsync(ct);
         _log.LogInformation($"Visit {visit.Id} status {from} to {visit.Status} by {_user.Subject} at {visit.UpdatedAtUTC}");
