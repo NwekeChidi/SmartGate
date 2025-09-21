@@ -50,7 +50,7 @@ if (useDev)
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = DevAuthHandler.Scheme;
-        options.DefaultChallengeScheme    = DevAuthHandler.Scheme;
+        options.DefaultChallengeScheme = DevAuthHandler.Scheme;
     }).AddScheme<DevAuthOptions, DevAuthHandler>(DevAuthHandler.Scheme, _ => { });
 }
 else
@@ -86,9 +86,10 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddControllers().AddJsonOptions(o =>
 {
     o.JsonSerializerOptions.PropertyNamingPolicy = null;
-    o.JsonSerializerOptions.Converters.Insert(0, new StringEnumConverterFactory());
+    o.JsonSerializerOptions.Converters.Add(new StringTryParseConverterFactory());
     o.JsonSerializerOptions.Converters.Add(
             new JsonStringEnumConverter(allowIntegerValues: false));
+    // o.JsonSerializerOptions.Converters.Insert(0, new StringTryParseConverterFactory());
     o.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 });
 builder.Services.AddProblemDetails();
