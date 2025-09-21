@@ -1,5 +1,8 @@
 namespace SmartGate.Domain.Common;
 
-public abstract class DomainException(string message) : Exception(message)
+public abstract class DomainException : Exception
 {
+    protected DomainException() { }
+    protected DomainException(string message) : base(message) { }
+    protected DomainException(string message, Exception innerException) : base(message, innerException) { }
 }

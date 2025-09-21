@@ -19,11 +19,9 @@ public sealed partial class CreateVisitRequestValidator : AbstractValidator<Crea
         RuleFor(x => x.Driver).NotNull();
         RuleFor(x => x.Driver.FirstName)
             .NotEmpty()
-            .MinimumLength(1)
             .MaximumLength(128);
         RuleFor(x => x.Driver.LastName)
             .NotEmpty()
-            .MinimumLength(1)
             .MaximumLength(128);
         RuleFor(x => x.Driver.Id)
             .NotEmpty()
@@ -47,6 +45,6 @@ public sealed partial class CreateVisitRequestValidator : AbstractValidator<Crea
             .WithMessage("New visits must have status 'PreRegistered'");
     }
 
-    [GeneratedRegex(@"^(?i)dfds-[a-z0-9]{1,11}$", RegexOptions.Compiled, "en-US")]
+    [GeneratedRegex(@"^(?i)dfds-[0-9]{1,11}$", RegexOptions.Compiled, "en-GB")]
     private static partial Regex _driverIdRegex();
 }

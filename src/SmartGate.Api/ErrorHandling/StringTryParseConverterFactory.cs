@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -8,7 +9,7 @@ public delegate bool TryParseDelegate(string input, out object? result);
 
 public sealed class StringTryParseConverterFactory : JsonConverterFactory
 {
-    private static readonly Dictionary<Type, JsonConverter> _converterCache = new();
+    private static readonly ConcurrentDictionary<Type, JsonConverter> _converterCache = new();
 
     public override bool CanConvert(Type t)
     {
@@ -65,10 +66,11 @@ public sealed class StringTryParseConverterFactory : JsonConverterFactory
             throw new JsonException($"Expected string for {typeName}.");
 
         var raw = reader.GetString();
+        if (raw is null)
+            throw new JsonException($"Null string value for {typeName}.");
         if (string.IsNullOrWhiteSpace(raw))
             throw new JsonException($"{typeName} cannot be empty.");
-
-        return raw!;
+        return raw;
     }
 
     private sealed class TryParseConverter<T>(TryParseDelegate tryParse) : JsonConverter<T>
@@ -80,18 +82,24 @@ public sealed class StringTryParseConverterFactory : JsonConverterFactory
             if (!tryParse(raw, out var result) || result is null)
                 throw new JsonException($"Invalid {typeof(T).Name}: '{raw}'.");
 
-            if (typeof(T) == typeof(Guid) && (Guid)result == Guid.Empty)
-                throw new JsonException("Guid cannot be empty.");
-
+            ValidateTypeSpecificRules(result);
             return (T)result;
         }
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
             => writer.WriteStringValue(value?.ToString());
+
+        private static void ValidateTypeSpecificRules(object result)
+        {
+            if (typeof(T) == typeof(Guid) && (Guid)result == Guid.Empty)
+                throw new JsonException("Guid cannot be empty.");
+        }
     }
 
     private sealed class EnumConverter<T> : JsonConverter<T> where T : struct, Enum
     {
+        private static readonly Lazy<string> _allowedNames = new(() => string.Join(", ", Enum.GetNames<T>()));
+
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var raw = ValidateAndGetString(reader, typeof(T).Name);
@@ -99,8 +107,7 @@ public sealed class StringTryParseConverterFactory : JsonConverterFactory
             if (Enum.TryParse<T>(raw, true, out var value))
                 return value;
 
-            var allowed = string.Join(", ", Enum.GetNames<T>());
-            throw new JsonException($"Invalid {typeof(T).Name}: '{raw}'. Allowed: {allowed}.");
+            throw new JsonException($"Invalid {typeof(T).Name}: '{raw}'. Allowed: {_allowedNames.Value}.");
         }
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
@@ -116,8 +123,6 @@ public sealed class StringTryParseConverterFactory : JsonConverterFactory
         {
             if (value.HasValue)
                 inner.Write(writer, value.Value, options);
-            else
-                writer.WriteNullValue();
         }
     }
 }

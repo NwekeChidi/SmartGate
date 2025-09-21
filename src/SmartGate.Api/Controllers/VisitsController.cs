@@ -17,6 +17,7 @@ public sealed class VisitsController : ControllerBase
 
     [HttpPost("create")]
     [Authorize(Policy = AppConstants.Policies.Visits.Write)]
+    [ValidateAntiForgeryToken]
     [ProducesResponseType(typeof(VisitResponse), StatusCodes.Status201Created)]
     public async Task<IResult> Create([FromBody] CreateVisitRequest body, CancellationToken ct)
     {
