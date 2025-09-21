@@ -26,6 +26,7 @@ public static class TestData
             truck ?? Truck(),
             driver ?? Driver(),
             activities ?? [Delivery("DFDS11001")],
+            createdBy: "TEST",
             id: null,
             nowUTC: nowUTC);
     public static Visit VisitWithNonNull(
@@ -37,6 +38,7 @@ public static class TestData
             truck,
             driver,
             activities,
+            createdBy: "TEST",
             id: null,
             nowUTC);
 }

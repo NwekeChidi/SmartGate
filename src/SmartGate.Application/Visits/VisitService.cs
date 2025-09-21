@@ -71,7 +71,7 @@ public sealed class VisitService : IVisitService
             .ToList();
 
         var now = _clock.UTCNow;
-        var visit = new Visit(truck, driver, activities, nowUTC: now, createdBy: _user.Subject);
+        var visit = new Visit(truck, driver, activities, createdBy: _user.Subject, nowUTC: now);
 
         await _repo.AddAsync(visit, ct);
         await _repo.SaveChangesAsync(ct);

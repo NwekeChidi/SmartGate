@@ -43,7 +43,7 @@ public sealed class Driver
             throw new InvalidDriverIdException("DriverId must start with DFDS-.");
 
         if (up.Length <= DriverIdPrefix.Length)
-            throw new InvalidDriverIdException("DriverId must include at least one alphanumeric after DFDS-.");
+            throw new InvalidDriverIdException("DriverId must include 11 alphanumeric characters after DFDS-.");
 
         if (up.Length > MaxDriverIdLength)
             throw new MaxLengthExceededException(nameof(Id), MaxDriverIdLength);

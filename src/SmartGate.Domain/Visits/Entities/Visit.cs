@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using SmartGate.Domain.Common;
 using SmartGate.Domain.Visits.Events;
 
@@ -25,6 +26,7 @@ public sealed class Visit : AggregateRoot
         { VisitStatus.Completed, null }
     };
 
+    [ExcludeFromCodeCoverage]
     private Visit()
     {
         Truck = null!;
@@ -33,7 +35,7 @@ public sealed class Visit : AggregateRoot
         UpdatedBy = null!;
     }
 
-    public Visit(Truck truck, Driver driver, IEnumerable<Activity> activities, Guid? id = null, DateTime? nowUTC = null, string? createdBy = null)
+    public Visit(Truck truck, Driver driver, IEnumerable<Activity> activities, string createdBy, Guid? id = null, DateTime? nowUTC = null)
     {
         if (truck is null) throw new NullReferenceInAggregateException(nameof(truck));
         if (driver is null) throw new NullReferenceInAggregateException(nameof(driver));
@@ -51,7 +53,7 @@ public sealed class Visit : AggregateRoot
         var ts = nowUTC ?? DateTime.UtcNow;
         CreatedAtUTC = ts;
         UpdatedAtUTC = ts;
-        CreatedBy = string.IsNullOrWhiteSpace(createdBy) ? "SYSTEM" : createdBy!;
+        CreatedBy = createdBy!;
         UpdatedBy = CreatedBy;
     }
 
@@ -61,7 +63,7 @@ public sealed class Visit : AggregateRoot
 
         if (Status == VisitStatus.Completed) throw new CompletedIsTerminalException();
 
-        if (!_linearNext.TryGetValue(Status, out var expected) || expected is null || expected != next)
+        if (!_linearNext.TryGetValue(Status, out var expected) || expected != next)
             throw new InvalidStatusTransitionException(Status, next);
 
         var oldStatus = Status;
