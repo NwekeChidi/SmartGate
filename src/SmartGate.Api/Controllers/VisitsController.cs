@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartGate.Api.Common;
 using SmartGate.Api.ErrorHandling;
 using SmartGate.Application.Abstractions;
 using SmartGate.Application.Visits.Dto;
@@ -15,7 +16,7 @@ public sealed class VisitsController : ControllerBase
     public VisitsController(IVisitService svc) => _svc = svc;
 
     [HttpPost("create")]
-    [Authorize(Policy = "VisitsWrite")]
+    [Authorize(Policy = AppConstants.Policies.Visits.Write)]
     [ProducesResponseType(typeof(VisitResponse), StatusCodes.Status201Created)]
     public async Task<IResult> Create([FromBody] CreateVisitRequest body, CancellationToken ct)
     {
@@ -31,7 +32,7 @@ public sealed class VisitsController : ControllerBase
     }
 
     [HttpGet("/")]
-    [Authorize(Policy = "VisitsRead")]
+    [Authorize(Policy = AppConstants.Policies.Visits.Read)]
     [ProducesResponseType(typeof(PaginatedResult<VisitResponse>), StatusCodes.Status200OK)]
     public async Task<IResult> List([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
     {
@@ -47,7 +48,7 @@ public sealed class VisitsController : ControllerBase
     }
 
     [HttpPatch("status_update/{id:guid}")]
-    [Authorize(Policy = "VisitsWrite")]
+    [Authorize(Policy = AppConstants.Policies.Visits.Write)]
     [ProducesResponseType(typeof(VisitResponse), StatusCodes.Status200OK)]
     public async Task<IResult> UpdateStatus([FromRoute] Guid id, [FromBody] UpdateVisitStatusRequest body, CancellationToken ct)
     {
