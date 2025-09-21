@@ -23,7 +23,7 @@ public sealed class Activity
 
     public Activity(ActivityType type, string unitNumberRaw, Guid? id = null)
     {
-        if (string.IsNullOrEmpty(unitNumberRaw))
+        if (string.IsNullOrWhiteSpace(unitNumberRaw))
             throw new NullReferenceInAggregateException(UnitNumberName);
 
         Id = id ?? Guid.NewGuid();

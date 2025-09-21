@@ -179,4 +179,62 @@ public class VisitServiceTests
         second.Activities.Should().ContainSingle(a => a.Type == ActivityType.Delivery && a.UnitNumber == "DFDS3009");
 
     }
+
+    [Fact]
+    public async Task ListVisits_DefaultsParameters()
+    {
+        var repo = Substitute.For<IVisitRepository>();
+        repo.ListAsync(Arg.Any<PageRequest>(), Arg.Any<CancellationToken>())
+            .Returns(ci => Task.FromResult<IReadOnlyList<Visit>>([]));
+
+        var service = TestHelpers.Service(repo);
+
+        var page = await service.ListVisitsAsync(page: 0, pageSize: 0);
+
+        page.Count.Should().Be(0);
+        page.Items.Should().BeEmpty();
+        page.Page.Should().Be(0);
+        page.PageSize.Should().Be(0);
+
+        await repo.Received(1)
+                .ListAsync(
+                    Arg.Is<PageRequest>(r => r.Page == 0 && r.PageSize == 0),
+                    Arg.Any<CancellationToken>()
+                );
+    }
+
+    [Fact]
+    public async Task CreateVisit_IdempotencyKeyAlreadyReserved_ThrowsDuplicateRequestException()
+    {
+        var repo = Substitute.For<IVisitRepository>();
+        var idem = Substitute.For<IIdempotencyStore>();
+        var key = Guid.NewGuid();
+        
+        idem.TryReserveAsync(key, Arg.Any<CancellationToken>()).Returns(false);
+        
+        var service = TestHelpers.Service(repo, idem: idem);
+        
+        var req = new CreateVisitRequest(
+            "ABC123",
+            new DriverDto("John", "Doe", "DFDS-123"),
+            [new ActivityDto(ActivityType.Delivery, "DFDS-456")],
+            VisitStatus.PreRegistered,
+            key
+        );
+        
+        await service.Invoking(s => s.CreateVisitAsync(req))
+            .Should().ThrowAsync<DuplicateRequestException>()
+            .WithMessage($"A request with IdempotencyKey '{key}' already exists.");
+    }
+
+    [Fact]
+    public void ActivityResponse_Properties_AreAccessible()
+    {
+        var id = Guid.NewGuid();
+        var response = new ActivityResponse(id, ActivityType.Delivery, "DFDS123");
+        
+        response.Id.Should().Be(id);
+        response.Type.Should().Be(ActivityType.Delivery);
+        response.UnitNumber.Should().Be("DFDS123");
+    }
 }

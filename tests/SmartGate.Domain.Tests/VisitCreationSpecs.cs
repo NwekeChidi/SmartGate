@@ -41,7 +41,7 @@ public class VisitCreationSpecs
     public void Creates_visit_with_delivery_and_collection()
     {
         var visit = TestData.VisitWith(activities: [
-            TestData.Delivery(" DFDS11001 "),
+            TestData.Delivery(" DFDS11001 ", id: Guid.NewGuid()),
             TestData.Collection(" DFDS22002 ")
         ]);
 

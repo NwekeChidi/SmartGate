@@ -47,6 +47,13 @@ public class GuardClauseSpecs
     }
 
     [Fact]
+    public void Whitespace_unit_number_rejected()
+    {
+        var activity = () => new Activity(ActivityType.Delivery, "   ");
+        activity.Should().Throw<NullReferenceInAggregateException>();
+    }
+
+    [Fact]
     public void Null_plate_rejected()
     {
         var activity = () => new Truck(null!);

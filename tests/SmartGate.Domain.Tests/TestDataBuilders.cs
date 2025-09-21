@@ -11,11 +11,11 @@ public static class TestData
         string lastName = "Skywalker",
         string id = "dfds-202435467") => new(firstName, lastName, id);
 
-    public static Activity Delivery(string unitNumberRaw = " dfds-789576 ")
-        => new(ActivityType.Delivery, unitNumberRaw);
+    public static Activity Delivery(string unitNumberRaw = " dfds-789576 ", Guid? id = null)
+        => new(ActivityType.Delivery, unitNumberRaw, id);
 
-    public static Activity Collection(string unitNumberRaw = " dfds189576 ")
-        => new(ActivityType.Collection, unitNumberRaw);
+    public static Activity Collection(string unitNumberRaw = " dfds189576 ", Guid? id = null)
+        => new(ActivityType.Collection, unitNumberRaw, id);
 
     public static Visit VisitWith(
         Truck? truck = null,
