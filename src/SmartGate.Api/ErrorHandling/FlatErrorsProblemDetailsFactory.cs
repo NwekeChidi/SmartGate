@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using SmartGate.Api.Common;
 
 namespace SmartGate.Api.ErrorHandling;
 
@@ -30,8 +31,8 @@ public sealed class FlatErrorsProblemDetailsFactory : ProblemDetailsFactory
         var vpd = new ValidationProblemDetails
         {
             Status = statusCode ?? StatusCodes.Status400BadRequest,
-            Title = title ?? "One or more validation errors occurred.",
-            Type = type ?? "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+            Title = title ?? AppConstants.RFCErrors.ValidationErrorTitle,
+            Type = type ?? AppConstants.RFCErrors.DefaultErrorType,
             Detail = detail,
             Instance = instance ?? httpContext.Request.Path
         };
