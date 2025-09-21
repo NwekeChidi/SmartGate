@@ -4,9 +4,9 @@ namespace SmartGate.Domain.Visits.Entities;
 
 public sealed class Activity
 {
-    public const int MaxUnitLength = 10;
-    private const string UnitNumberName = "UnitNumber";
-    public const string RequiredUnitPrefix = "DFDS";
+    public const int MaxUnitLength = DomainConstants.Activity.MaxUnitLength;
+    private const string UnitNumberName = DomainConstants.Activity.UnitNumberName;
+    public const string RequiredUnitPrefix = DomainConstants.Activity.RequiredUnitPrefix;
 
     public Guid Id { get; }
     public ActivityType Type { get; }

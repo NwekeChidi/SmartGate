@@ -4,8 +4,8 @@ namespace SmartGate.Domain.Visits.Entities;
 
 public sealed class Truck
 {
-    public const int MaxPlateLength = 7;
-    private const string licensePlateName = "truckLicensePlate";
+    public const int MaxPlateLength = DomainConstants.Truck.TruckPlateMaxLength;
+    private const string licensePlateName = DomainConstants.Truck.TruckLicensePlateName;
     public string LicensePlateRaw { get; }
     public string LicensePlateNormalized { get; }
 

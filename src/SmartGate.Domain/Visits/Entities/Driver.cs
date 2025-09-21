@@ -1,10 +1,11 @@
+using SmartGate.Domain.Common;
 namespace SmartGate.Domain.Visits.Entities;
 
 public sealed class Driver
 {
-    public const int MaxNameLength = 128;
-    public const int MaxDriverIdLength = 11;
-    public const string DriverIdPrefix = "DFDS-";
+    public const int MaxNameLength = DomainConstants.Driver.DriverNameMaxLength;
+    public const int MaxDriverIdLength = DomainConstants.Driver.DriverIdLength;
+    public const string DriverIdPrefix = DomainConstants.Driver.DriverIdPrefix;
     public string Id { get; }
     public string FirstName { get; }
     public string LastName { get; }
@@ -53,6 +54,6 @@ public sealed class Driver
 
         return up;
     }
-    
+
     public override string ToString() => $"{FirstName} {LastName}";
 }
