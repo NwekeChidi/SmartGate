@@ -1,8 +1,9 @@
 using System.Text.RegularExpressions;
 using FluentValidation;
+using SmartGate.Application.Visits.Dto;
 using SmartGate.Domain.Visits;
 
-namespace SmartGate.Application.Visits.Dto;
+namespace SmartGate.Application.Visits.Validators;
 
 public sealed partial class CreateVisitRequestValidator : AbstractValidator<CreateVisitRequest>
 {

@@ -7,5 +7,5 @@ public sealed class VisitStatusChanged(Guid visitId, VisitStatus oldStatus, Visi
     public Guid VisitId { get; } = visitId;
     public VisitStatus OldStatus { get; } = oldStatus;
     public VisitStatus NewStatus { get; } = newStatus;
-    public DateTime OccurredAtUTC { get; } = occurredAtUtc;
+    public DateTime OccurredAtUtc { get; } = occurredAtUtc;
 }

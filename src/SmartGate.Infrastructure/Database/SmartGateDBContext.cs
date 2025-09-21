@@ -30,7 +30,7 @@ public class SmartGateDbContext(DbContextOptions<SmartGateDbContext> options) : 
             .Where(e => e.Entity.DomainEvents.Count != 0)
             .ToList();
 
-        var events = aggregates.SelectMany(x => x.Entity.DomainEvents).ToList();
+        var events = aggregates.SelectMany(x => x.Entity.DomainEvents);
 
         // Convert to outbox messages (event-ready)
         foreach (var evt in events)
@@ -38,7 +38,7 @@ public class SmartGateDbContext(DbContextOptions<SmartGateDbContext> options) : 
             OutboxMessages.Add(new OutboxMessage
             {
                 Id = Guid.NewGuid(),
-                OccurredAtUTC = evt.OccurredAtUTC,
+                OccurredAtUTC = evt.OccurredAtUtc,
                 Type = evt.GetType().FullName ?? evt.GetType().Name,
                 Content = JsonSerializer.Serialize(evt, evt.GetType()),
                 ProcessedAtUTC = null

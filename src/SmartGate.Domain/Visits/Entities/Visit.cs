@@ -53,7 +53,7 @@ public sealed class Visit : AggregateRoot
         var ts = nowUTC ?? DateTime.UtcNow;
         CreatedAtUTC = ts;
         UpdatedAtUTC = ts;
-        CreatedBy = createdBy!;
+        CreatedBy = createdBy;
         UpdatedBy = CreatedBy;
     }
 

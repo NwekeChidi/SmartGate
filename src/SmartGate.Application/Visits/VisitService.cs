@@ -63,7 +63,6 @@ public sealed class VisitService : IVisitService
             );
             await _drivers.AddAsync(driverEntity, ct);
         }
-        var driver = driverEntity;
 
         var truck = new Truck(request.TruckLicensePlate);
         var activities = request.Activities
@@ -71,7 +70,7 @@ public sealed class VisitService : IVisitService
             .ToList();
 
         var now = _clock.UtcNow;
-        var visit = new Visit(truck, driver, activities, createdBy: _user.Subject, nowUTC: now);
+        var visit = new Visit(truck, driverEntity, activities, createdBy: _user.Subject, nowUTC: now);
 
         await _repo.AddAsync(visit, ct);
         await _repo.SaveChangesAsync(ct);
@@ -111,7 +110,7 @@ public sealed class VisitService : IVisitService
 
     private static VisitResponse Map(Visit v)
     {
-        var driverInfo = new DriverInformationDto(
+        var driverInfo = new DriverDto(
             FirstName: v.Driver.FirstName,
             LastName: v.Driver.LastName,
             Id: v.Driver.Id

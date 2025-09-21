@@ -8,6 +8,8 @@ public delegate bool TryParseDelegate(string input, out object? result);
 
 public sealed class StringTryParseConverterFactory : JsonConverterFactory
 {
+    private static readonly Dictionary<Type, JsonConverter> _converterCache = new();
+
     public override bool CanConvert(Type t)
     {
         var underlying = Nullable.GetUnderlyingType(t) ?? t;
@@ -16,6 +18,9 @@ public sealed class StringTryParseConverterFactory : JsonConverterFactory
 
     public override JsonConverter CreateConverter(Type t, JsonSerializerOptions _)
     {
+        if (_converterCache.TryGetValue(t, out var cached))
+            return cached;
+
         var underlyingType = Nullable.GetUnderlyingType(t);
         var targetType = underlyingType ?? t;
         
@@ -23,9 +28,12 @@ public sealed class StringTryParseConverterFactory : JsonConverterFactory
             ? (JsonConverter)Activator.CreateInstance(typeof(EnumConverter<>).MakeGenericType(targetType))!
             : (JsonConverter)Activator.CreateInstance(typeof(TryParseConverter<>).MakeGenericType(targetType), FindTryParse(targetType)!)!;
 
-        return underlyingType is not null
+        var result = underlyingType is not null
             ? (JsonConverter)Activator.CreateInstance(typeof(NullableConverter<>).MakeGenericType(underlyingType), converter)!
             : converter;
+
+        _converterCache[t] = result;
+        return result;
     }
 
     private static TryParseDelegate? FindTryParse(Type t)
@@ -108,6 +116,8 @@ public sealed class StringTryParseConverterFactory : JsonConverterFactory
         {
             if (value.HasValue)
                 inner.Write(writer, value.Value, options);
+            else
+                writer.WriteNullValue();
         }
     }
 }

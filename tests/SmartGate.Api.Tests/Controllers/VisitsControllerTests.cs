@@ -30,7 +30,7 @@ public class VisitsControllerTests
         var activities = new List<ActivityDto> { new(ActivityType.Delivery, "Unit1") };
         var request = new CreateVisitRequest("ABC123", driver, activities, VisitStatus.PreRegistered, null);
         var response = new VisitResponse(Guid.NewGuid(), VisitStatus.PreRegistered, "ABC123", 
-            new DriverInformationDto("Sasuke", "Uchiha", "123"), 
+            new DriverDto("Sasuke", "Uchiha", "123"), 
             new List<ActivityResponse> { new(Guid.NewGuid(), ActivityType.Delivery, "Unit1") },
             "user", "user", DateTime.UtcNow, DateTime.UtcNow);
         
@@ -63,7 +63,7 @@ public class VisitsControllerTests
         var visits = new List<VisitResponse>
         {
             new(Guid.NewGuid(), VisitStatus.PreRegistered, "ABC123", 
-                new DriverInformationDto("Sasuke", "Uchiha", "123"),
+                new DriverDto("Sasuke", "Uchiha", "123"),
                 new List<ActivityResponse> { new(Guid.NewGuid(), ActivityType.Delivery, "Unit1") },
                 "user", "user", DateTime.UtcNow, DateTime.UtcNow)
         };
@@ -94,7 +94,7 @@ public class VisitsControllerTests
         var visitId = Guid.NewGuid();
         var request = new UpdateVisitStatusRequest(VisitStatus.Completed);
         var response = new VisitResponse(visitId, VisitStatus.Completed, "ABC123",
-            new DriverInformationDto("Sasuke", "Uchiha", "123"),
+            new DriverDto("Sasuke", "Uchiha", "123"),
             new List<ActivityResponse> { new(Guid.NewGuid(), ActivityType.Delivery, "Unit1") },
             "user", "user", DateTime.UtcNow, DateTime.UtcNow);
         

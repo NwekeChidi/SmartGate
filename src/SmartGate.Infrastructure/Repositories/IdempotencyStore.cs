@@ -25,10 +25,15 @@ public class IdempotencyStore(SmartGateDbContext db, ILogger<IdempotencyStore> l
             _log.LogDebug($"[EF] Idempotency reserved {key}");
             return true;
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex)
         {
-            _log.LogDebug($"[EF] Idempotency reservation failed; duplicate key {key}");
-            return false;
+            if (ex.InnerException?.Message?.Contains("duplicate key") == true || 
+                ex.InnerException?.Message?.Contains("unique constraint") == true)
+            {
+                _log.LogDebug($"[EF] Idempotency reservation failed; duplicate key {key}");
+                return false;
+            }
+            throw;
         }
     }
 

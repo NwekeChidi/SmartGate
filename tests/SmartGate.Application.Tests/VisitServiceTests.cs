@@ -280,7 +280,7 @@ public class VisitServiceTests
     {
         var repo = Substitute.For<IVisitRepository>();
         repo.ListAsync(Arg.Any<PageRequest>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Visit>>([]));;
+            .Returns(Task.FromResult<IReadOnlyList<Visit>>([]));
         
         var service = TestHelpers.Service(repo);
         

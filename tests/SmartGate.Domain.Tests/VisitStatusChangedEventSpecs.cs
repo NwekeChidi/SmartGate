@@ -21,7 +21,7 @@ public class VisitStatusChangedEventSpecs
         evt.VisitId.Should().Be(visit.Id);
         evt.OldStatus.Should().Be(VisitStatus.PreRegistered);
         evt.NewStatus.Should().Be(VisitStatus.AtGate);
-        evt.OccurredAtUTC.Should().Be(after);
+        evt.OccurredAtUtc.Should().Be(after);
     }
 
     [Fact]

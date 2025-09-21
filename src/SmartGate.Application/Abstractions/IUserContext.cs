@@ -9,5 +9,6 @@ public interface IUserContext
 [ExcludeFromCodeCoverage]
 public sealed class SystemUserContext : IUserContext
 {
-    public string Subject { get; } = "SYSTEM";
+    private const string SystemSubject = "SYSTEM";
+    public string Subject { get; } = SystemSubject;
 }

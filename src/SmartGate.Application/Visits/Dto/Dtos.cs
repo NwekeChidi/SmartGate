@@ -19,7 +19,7 @@ public sealed record CreateVisitRequest(
     Guid? IdempotencyKey
 );
 
-public sealed record DriverInformationDto(string FirstName, string LastName, string Id);
+
 
 public sealed record ActivityResponse(
     Guid Id,
@@ -31,7 +31,7 @@ public sealed record VisitResponse(
     Guid Id,
     [property: JsonConverter(typeof(JsonStringEnumConverter))] VisitStatus Status,
     string TruckLicensePlate,
-    DriverInformationDto DriverInformation,
+    DriverDto DriverInformation,
     IReadOnlyList<ActivityResponse> Activities,
     string CreatedBy,
     string UpdatedBy,

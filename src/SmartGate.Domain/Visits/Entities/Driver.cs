@@ -42,17 +42,17 @@ public sealed class Driver
         var up = input.Trim().ToUpperInvariant();
 
         if (!up.StartsWith(DriverIdPrefix))
-            throw new InvalidDriverIdException("DriverId must start with DFDS-.");
+            throw new InvalidDriverIdException("Driver Id must start with DFDS-.");
 
         if (up.Length <= DriverIdPrefix.Length)
-            throw new InvalidDriverIdException("DriverId must include 11 numeric characters after DFDS-.");
+            throw new InvalidDriverIdException("Driver Id must include 11 numeric characters after DFDS-.");
 
         if (up.Length > MaxDriverIdLength)
-            throw new MaxLengthExceededException(nameof(Id), MaxDriverIdLength);
+            throw new MaxLengthExceededException("Driver Id", MaxDriverIdLength);
 
         var suffix = up.Substring(DriverIdPrefix.Length);
         if (!suffix.All(char.IsDigit))
-            throw new InvalidDriverIdException("DriverId suffix must be numeric (0–9).");
+            throw new InvalidDriverIdException("Driver Id suffix must be numeric (0–9).");
 
         return up;
     }

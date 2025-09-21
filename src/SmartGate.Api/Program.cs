@@ -14,6 +14,7 @@ using System.Text.Json.Serialization;
 using FluentValidation;
 using SmartGate.Api.ErrorHandling;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using SmartGate.Application.Visits.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,8 +48,6 @@ builder.Services.AddSingleton<ProblemDetailsFactory, FlatErrorsProblemDetailsFac
 var useDev = builder.Configuration.GetValue<bool>("Auth:UseDevAuth");
 var jwtAuthority = builder.Configuration["Jwt:Authority"];
 var jwtSigningKey = builder.Configuration["Jwt:SigningKey"];
-
-
 
 if (useDev)
 {

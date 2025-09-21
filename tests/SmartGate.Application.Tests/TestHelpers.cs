@@ -6,6 +6,7 @@ using SmartGate.Application.Visits.Ports;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using SmartGate.Application.Visits.Validators;
 
 namespace SmartGate.Application.Tests;
 
