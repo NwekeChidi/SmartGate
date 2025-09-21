@@ -6,6 +6,7 @@ using SmartGate.Application.Visits.Ports;
 using SmartGate.Domain.Tests;
 using SmartGate.Domain.Visits;
 using SmartGate.Domain.Visits.Entities;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace SmartGate.Application.Tests;
 
@@ -225,6 +226,49 @@ public class VisitServiceTests
         await service.Invoking(s => s.CreateVisitAsync(req))
             .Should().ThrowAsync<DuplicateRequestException>()
             .WithMessage($"A request with IdempotencyKey '{key}' already exists.");
+    }
+
+    [Fact]
+    public async Task ListVisits_CachesResults_AndInvalidatesOnCreate()
+    {
+        var repo = Substitute.For<IVisitRepository>();
+        var cache = new MemoryCache(new MemoryCacheOptions());
+        var visit = new Visit(
+            new Truck("ABC123"),
+            new Driver("Luke", "Skywalker", "DFDS-123"),
+            [new Activity(ActivityType.Delivery, "DFDS456")],
+            nowUTC: DateTime.UtcNow,
+            createdBy: "Test"
+        );
+
+        repo.ListAsync(Arg.Any<PageRequest>(), Arg.Any<CancellationToken>())
+            .Returns([visit]);
+        repo.AddAsync(Arg.Any<Visit>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        repo.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+
+        var service = TestHelpers.Service(repo, cache: cache);
+
+        // First call - should hit repository
+        await service.ListVisitsAsync(1, 20);
+        await repo.Received(1).ListAsync(Arg.Any<PageRequest>(), Arg.Any<CancellationToken>());
+
+        // Second call - should hit cache
+        await service.ListVisitsAsync(1, 20);
+        await repo.Received(1).ListAsync(Arg.Any<PageRequest>(), Arg.Any<CancellationToken>());
+
+        // Create visit - should invalidate cache
+        var createReq = new CreateVisitRequest(
+            "DEF456",
+            new DriverDto("Han", "Solo", "DFDS-789"),
+            [new ActivityDto(ActivityType.Collection, "DFDS999")],
+            VisitStatus.PreRegistered,
+            null
+        );
+        await service.CreateVisitAsync(createReq);
+
+        // Next list call should hit repository again
+        await service.ListVisitsAsync(1, 20);
+        await repo.Received(2).ListAsync(Arg.Any<PageRequest>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

@@ -7,6 +7,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using SmartGate.Application.Visits.Validators;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace SmartGate.Application.Tests;
 
@@ -35,7 +36,8 @@ public static class TestHelpers
         IIdempotencyStore? idem = null,
         IPiiPolicy? pii = null,
         IDriverRepository? driver = null,
-        ILogger<VisitService>? log = null) => new(
+        ILogger<VisitService>? log = null,
+        IMemoryCache? cache = null) => new(
             repo,
             CreateValidator(),
             clock ?? FixedClock(DateTime.UtcNow),
@@ -43,7 +45,8 @@ public static class TestHelpers
             idem ?? Idem(),
             user ?? User(),
             driver ?? Substitute.For<IDriverRepository>(),
-            log ?? NullLogger<VisitService>.Instance
+            log ?? NullLogger<VisitService>.Instance,
+            cache ?? new MemoryCache(new MemoryCacheOptions())
         );
 
     private static T Also<T>(this T obj, Action<T> act) { act(obj); return obj; }
