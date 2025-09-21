@@ -1,3 +1,4 @@
+using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using SmartGate.Application.Abstractions;
 using SmartGate.Domain.Common;
@@ -48,7 +49,7 @@ public static class ProblemDetailsExtensions
                 break;
         }
 
-        return Results.Problem(title: pd.Title, detail: pd.Detail, statusCode: pd.Status,
+        return Results.Problem(title: HttpUtility.HtmlEncode(pd.Title), detail: HttpUtility.HtmlEncode(pd.Detail), statusCode: pd.Status,
             instance: pd.Instance, extensions: pd.Extensions);
     }
 }
