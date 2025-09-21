@@ -216,7 +216,7 @@ public class VisitServiceTests
         
         var req = new CreateVisitRequest(
             "ABC123",
-            new DriverDto("John", "Doe", "DFDS-123"),
+            new DriverDto("Sasuke", "Uchiha", "DFDS-123"),
             [new ActivityDto(ActivityType.Delivery, "DFDS-456")],
             VisitStatus.PreRegistered,
             key
@@ -225,6 +225,87 @@ public class VisitServiceTests
         await service.Invoking(s => s.CreateVisitAsync(req))
             .Should().ThrowAsync<DuplicateRequestException>()
             .WithMessage($"A request with IdempotencyKey '{key}' already exists.");
+    }
+
+    [Fact]
+    public async Task CreateVisit_ExistingDriver_ReusesDriver()
+    {
+        var repo = Substitute.For<IVisitRepository>();
+        var drivers = Substitute.For<IDriverRepository>();
+        var existingDriver = new Driver("Sasuke", "Uchiha", "DFDS-123");
+        
+        drivers.GetByIdAsync("DFDS-123", Arg.Any<CancellationToken>()).Returns(existingDriver);
+        
+        var service = TestHelpers.Service(repo, driver: drivers);
+        
+        var req = new CreateVisitRequest(
+            "ABC123",
+            new DriverDto("Sasuke", "Uchiha", "dfds-123"),
+            [new ActivityDto(ActivityType.Delivery, "DFDS-456")],
+            VisitStatus.PreRegistered,
+            null
+        );
+        
+        await service.CreateVisitAsync(req);
+        
+        await drivers.DidNotReceive().AddAsync(Arg.Any<Driver>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CreateVisit_WithValidIdempotencyKey_CompletesIdempotency()
+    {
+        var repo = Substitute.For<IVisitRepository>();
+        var idem = Substitute.For<IIdempotencyStore>();
+        var key = Guid.NewGuid();
+        
+        idem.TryReserveAsync(key, Arg.Any<CancellationToken>()).Returns(true);
+        
+        var service = TestHelpers.Service(repo, idem: idem);
+        
+        var req = new CreateVisitRequest(
+            "ABC123",
+            new DriverDto("Sasuke", "Uchiha", "DFDS-123"),
+            [new ActivityDto(ActivityType.Delivery, "DFDS-456")],
+            VisitStatus.PreRegistered,
+            key
+        );
+        
+        await service.CreateVisitAsync(req);
+        
+        await idem.Received(1).CompleteAsync(key, Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ListVisits_PageSizeOver200_ClampsTo200()
+    {
+        var repo = Substitute.For<IVisitRepository>();
+        repo.ListAsync(Arg.Any<PageRequest>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Visit>>([]));;
+        
+        var service = TestHelpers.Service(repo);
+        
+        await service.ListVisitsAsync(1, 300);
+        
+        await repo.Received(1).ListAsync(
+            Arg.Is<PageRequest>(r => r.PageSize == 200),
+            Arg.Any<CancellationToken>()
+        );
+    }
+
+    [Fact]
+    public async Task UpdateVisitStatus_VisitNotFound_ThrowsKeyNotFoundException()
+    {
+        var repo = Substitute.For<IVisitRepository>();
+        var visitId = Guid.NewGuid();
+        
+        repo.GetByIdAsync(visitId, Arg.Any<CancellationToken>()).Returns((Visit?)null);
+        
+        var service = TestHelpers.Service(repo);
+        var req = new UpdateVisitStatusRequest(VisitStatus.AtGate);
+        
+        await service.Invoking(s => s.UpdateVisitStatusAsync(req, visitId))
+            .Should().ThrowAsync<KeyNotFoundException>()
+            .WithMessage("Visit not found.");
     }
 
     [Fact]
