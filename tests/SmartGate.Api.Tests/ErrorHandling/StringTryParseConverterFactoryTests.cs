@@ -139,6 +139,51 @@ public class StringTryParseConverterFactoryTests
         result.Should().Be("null");
     }
 
+    [Fact]
+    public void Deserialize_InvalidInt_ThrowsException()
+    {
+        var json = "\"invalid\"";
+        var act = () => JsonSerializer.Deserialize<int>(json, _options);
+        act.Should().Throw<JsonException>().WithMessage("Invalid Int32: 'invalid'.");
+    }
+
+    [Fact]
+    public void Deserialize_WhitespaceString_ThrowsException()
+    {
+        var json = "\"   \"";
+        var act = () => JsonSerializer.Deserialize<int>(json, _options);
+        act.Should().Throw<JsonException>().WithMessage("Int32 cannot be empty.");
+    }
+
+    [Fact]
+    public void Serialize_NullValue_WritesNull()
+    {
+        string? value = null;
+        var result = JsonSerializer.Serialize(value, _options);
+        result.Should().Be("null");
+    }
+
+    [Fact]
+    public void CreateConverter_NonNullableEnum_ReturnsEnumConverter()
+    {
+        var converter = _factory.CreateConverter(typeof(TestEnum), new JsonSerializerOptions());
+        converter.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void CreateConverter_NonNullableType_ReturnsTryParseConverter()
+    {
+        var converter = _factory.CreateConverter(typeof(int), new JsonSerializerOptions());
+        converter.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void CreateConverter_NullableType_ReturnsNullableConverter()
+    {
+        var converter = _factory.CreateConverter(typeof(int?), new JsonSerializerOptions());
+        converter.Should().NotBeNull();
+    }
+
     public enum TestEnum
     {
         Value1,

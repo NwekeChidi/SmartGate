@@ -108,8 +108,6 @@ public sealed class StringTryParseConverterFactory : JsonConverterFactory
         {
             if (value.HasValue)
                 inner.Write(writer, value.Value, options);
-            else
-                writer.WriteNullValue();
         }
     }
 }
