@@ -68,18 +68,19 @@ else
             {
                 ValidateIssuer = !string.IsNullOrWhiteSpace(jwtAuthority),
                 ValidIssuer = jwtAuthority,
-                ValidateAudience = false, // Disable audience validation for now
+                ValidateAudience = false,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                    System.Text.Encoding.UTF8.GetBytes(jwtSigningKey ?? throw new InvalidOperationException("JWT SigningKey is required for non-dev environments"))),
+                    System.Text.Encoding.UTF8.GetBytes(jwtSigningKey ?? throw new InvalidOperationException("[Auth] JWT SigningKey is required for non-dev environments"))),
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.FromMinutes(5)
+                ClockSkew = TimeSpan.FromMinutes(5),
+                NameClaimType = "sub"
             };
             options.Events = new JwtBearerEvents
             {
                 OnChallenge = context =>
                 {
-                    Console.WriteLine($"[Auth]JWT Challenge: {context.Error}, {context.ErrorDescription}");
+                    Console.WriteLine($"[Auth] JWT Challenge: {context.Error}, {context.ErrorDescription}");
                     return Task.CompletedTask;
                 }
             };
@@ -132,8 +133,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
-
-// Rate limiting (simple fixed-window)
+// Rate limiting
 var perMinute = builder.Configuration.GetValue("RateLimiting:PermitPerMinute", 120);
 builder.Services.AddRateLimiter(_ => _
     .AddFixedWindowLimiter("fixed", options =>

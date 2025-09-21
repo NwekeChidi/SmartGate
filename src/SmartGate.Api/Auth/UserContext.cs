@@ -9,6 +9,8 @@ public sealed class HttpUserContext(IHttpContextAccessor http) : IUserContext
 
     public string Subject =>
         _http.HttpContext?.User?.FindFirstValue("sub")
+        ?? _http.HttpContext?.User?.FindFirstValue("name")
+        ?? _http.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
         ?? _http.HttpContext?.User?.Identity?.Name
         ?? "anonymous";
 }
