@@ -49,6 +49,7 @@ public sealed class VisitsController : ControllerBase
 
     [HttpPatch("status_update/{id:guid}")]
     [Authorize(Policy = AppConstants.Policies.Visits.Write)]
+    [ValidateAntiForgeryToken]
     [ProducesResponseType(typeof(VisitResponse), StatusCodes.Status200OK)]
     public async Task<IResult> UpdateStatus([FromRoute] Guid id, [FromBody] UpdateVisitStatusRequest body, CancellationToken ct)
     {
