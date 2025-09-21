@@ -25,9 +25,10 @@ builder.Logging.AddSimpleConsole(o => { o.TimestampFormat = "HH:mm:ss "; o.Singl
 builder.Services.AddDbContext<SmartGateDbContext>(o =>
 {
     var cs = builder.Configuration.GetConnectionString("Postgres");
+    var isDev = builder.Environment.IsDevelopment();
     o.UseNpgsql(cs)
-     .EnableDetailedErrors()
-     .EnableSensitiveDataLogging();
+     .EnableDetailedErrors(isDev)
+     .EnableSensitiveDataLogging(isDev);
 });
 
 // DI: Application + Infra
@@ -44,6 +45,10 @@ builder.Services.AddSingleton<ProblemDetailsFactory, FlatErrorsProblemDetailsFac
 
 // Auth
 var useDev = builder.Configuration.GetValue<bool>("Auth:UseDevAuth");
+var jwtAuthority = builder.Configuration["Jwt:Authority"];
+var jwtSigningKey = builder.Configuration["Jwt:SigningKey"];
+
+
 
 if (useDev)
 {
@@ -61,26 +66,38 @@ else
             options.RequireHttpsMetadata = false;
             options.TokenValidationParameters = new()
             {
-                ValidateIssuer = !string.IsNullOrWhiteSpace(builder.Configuration["Jwt:Authority"]),
-                ValidIssuer = builder.Configuration["Jwt:Authority"],
-                ValidateAudience = !string.IsNullOrWhiteSpace(builder.Configuration["Jwt:Audience"]),
-                ValidAudience = builder.Configuration["Jwt:Audience"],
-                ValidateIssuerSigningKey = !string.IsNullOrWhiteSpace(builder.Configuration["Jwt:SigningKey"]),
-                IssuerSigningKey = string.IsNullOrWhiteSpace(builder.Configuration["Jwt:SigningKey"])
-                    ? null
-                    : new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                        System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SigningKey"]!)),
-                ValidateLifetime = true
+                ValidateIssuer = !string.IsNullOrWhiteSpace(jwtAuthority),
+                ValidIssuer = jwtAuthority,
+                ValidateAudience = false, // Disable audience validation for now
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+                    System.Text.Encoding.UTF8.GetBytes(jwtSigningKey ?? throw new InvalidOperationException("JWT SigningKey is required for non-dev environments"))),
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(5)
+            };
+            options.Events = new JwtBearerEvents
+            {
+                OnChallenge = context =>
+                {
+                    Console.WriteLine($"[Auth]JWT Challenge: {context.Error}, {context.ErrorDescription}");
+                    return Task.CompletedTask;
+                }
             };
         });
 }
 
 // Authorization policies
-builder.Services.AddAuthorizationBuilder()
-                             .AddPolicy("VisitsRead", policy =>
+var authBuilder = builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("VisitsRead", policy =>
         policy.RequireAssertion(ctx => Policies.HasScopeOrRole(ctx.User, Policies.ReadScope)))
-                             .AddPolicy("VisitsWrite", policy =>
+    .AddPolicy("VisitsWrite", policy =>
         policy.RequireAssertion(ctx => Policies.HasScopeOrRole(ctx.User, Policies.WriteScope)));
+
+// Require authentication for all endpoints in non-dev environments
+if (!useDev)
+{
+    authBuilder.AddFallbackPolicy("RequireAuth", policy => policy.RequireAuthenticatedUser());
+}
 
 // Controllers + ProblemDetails + Swagger
 builder.Services.AddControllers().AddJsonOptions(o =>
@@ -89,7 +106,6 @@ builder.Services.AddControllers().AddJsonOptions(o =>
     o.JsonSerializerOptions.Converters.Add(new StringTryParseConverterFactory());
     o.JsonSerializerOptions.Converters.Add(
             new JsonStringEnumConverter(allowIntegerValues: false));
-    // o.JsonSerializerOptions.Converters.Insert(0, new StringTryParseConverterFactory());
     o.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 });
 builder.Services.AddProblemDetails();
