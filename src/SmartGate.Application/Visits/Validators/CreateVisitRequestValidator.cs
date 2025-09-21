@@ -27,7 +27,7 @@ public sealed partial class CreateVisitRequestValidator : AbstractValidator<Crea
         RuleFor(x => x.Driver.Id)
             .NotEmpty()
             .Must(DriverIdRegex.IsMatch)
-            .WithMessage("Driver.Id must match pattern DFDS-<1..6 alphanumeric characters>.");
+            .WithMessage("Driver.Id must match pattern DFDS-<1..11 alphanumeric characters>.");
 
         RuleFor(x => x.Activities).NotNull().Must(activity => activity.Count > 0).WithMessage("At least one activity is required");
         RuleForEach(x => x.Activities).ChildRules(activity =>
@@ -46,6 +46,6 @@ public sealed partial class CreateVisitRequestValidator : AbstractValidator<Crea
             .WithMessage("New visits must have status 'PreRegistered'");
     }
 
-    [GeneratedRegex(@"^(?i)dfds-[a-z0-9]{1,6}$", RegexOptions.Compiled, "en-US")]
+    [GeneratedRegex(@"^(?i)dfds-[a-z0-9]{1,11}$", RegexOptions.Compiled, "en-US")]
     private static partial Regex _driverIdRegex();
 }

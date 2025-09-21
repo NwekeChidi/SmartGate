@@ -48,7 +48,6 @@ public class VisitServiceTests
 
         response.DriverInformation.FirstName.Should().Be("Luke");
         response.DriverInformation.LastName.Should().Be("Skywalker");
-        Guid.TryParse(response.DriverInformation.Id, out _).Should().BeTrue();
 
         response.CreatedAtUtc.Should().Be(now);
         response.UpdatedAtUtc.Should().Be(now);
@@ -61,7 +60,7 @@ public class VisitServiceTests
     }
 
     [Fact]
-    public async Task CreateVisit_WithIdempotencyKey_ReturnsExistingWithoutCreating()
+    public async Task CreateVisit_WithIdempotencyKey_ThrowsDuplicateRequestException()
     {
         var repo = Substitute.For<IVisitRepository>();
         var visitId = Guid.NewGuid();
@@ -92,16 +91,12 @@ public class VisitServiceTests
             IdempotencyKey: Guid.NewGuid()
         );
 
-        var response = await service.CreateVisitAsync(req);
+        await service.Invoking(s => s.CreateVisitAsync(req))
+            .Should().ThrowAsync<DuplicateRequestException>();
 
         // assert
         await repo.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
         await repo.DidNotReceiveWithAnyArgs().SaveChangesAsync(default);
-        response.Id.Should().Be(visitId);
-        response.TruckLicensePlate.Should().Be("ABC123");
-        response.DriverInformation.FirstName.Should().Be("Senator");
-        response.DriverInformation.LastName.Should().Be("Palpatine");
-        response.Activities.Should().HaveCount(1);
     }
 
     [Fact]
@@ -154,7 +149,7 @@ public class VisitServiceTests
         var visit2 = new Visit(
             new Truck(" EF-34 GH "),
             new Driver("Luke", "Skywalker", "DFDS-20213547328"),
-            [new Activity(ActivityType.Delivery, " dfds3006 ")],
+            [new Activity(ActivityType.Collection, " dfds3006 ")],
             nowUTC: new DateTime(2025, 1, 1, 9, 0, 0, DateTimeKind.Utc),
             createdBy: "Darth");
 
@@ -181,7 +176,7 @@ public class VisitServiceTests
         second.TruckLicensePlate.Should().Be("AB12CD");
         second.DriverInformation.FirstName.Should().Be("Gojo");
         second.DriverInformation.LastName.Should().Be("Satoru");
-        second.Activities.Should().ContainSingle(a => a.Type == ActivityType.Delivery && a.UnitNumber == "DFDS009");
+        second.Activities.Should().ContainSingle(a => a.Type == ActivityType.Delivery && a.UnitNumber == "DFDS3009");
 
     }
 }

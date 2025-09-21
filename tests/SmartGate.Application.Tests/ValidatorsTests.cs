@@ -34,14 +34,14 @@ public class ValidatorsTests
             TruckLicensePlate: longPlate,
             Status: VisitStatus.PreRegistered,
             Driver: new DriverDto(new string('a', 129), new string('b', 129), "DFDS-202457"),
-            Activities: [new ActivityDto(ActivityType.Delivery, new string('u', 33))],
+            Activities: [new ActivityDto(ActivityType.Delivery, new string('d', 33))],
             IdempotencyKey: Guid.Empty);
 
         var result = v.TestValidate(req);
         result.ShouldHaveValidationErrorFor(x => x.TruckLicensePlate);
         result.ShouldHaveValidationErrorFor("Driver.FirstName");
         result.ShouldHaveValidationErrorFor("Driver.LastName");
-        result.ShouldHaveValidationErrorFor("Activities[0].UnitNumberRaw");
+        result.ShouldHaveValidationErrorFor("Activities[0].UnitNumber");
         result.ShouldHaveValidationErrorFor(x => x.IdempotencyKey);
     }
 
