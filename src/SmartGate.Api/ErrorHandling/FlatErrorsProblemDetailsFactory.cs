@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -31,6 +30,7 @@ public sealed class FlatErrorsProblemDetailsFactory : ProblemDetailsFactory
         string? type = null, string? detail = null, string? instance = null)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
+        
         var vpd = new ValidationProblemDetails
         {
             Status = statusCode ?? StatusCodes.Status400BadRequest,
@@ -39,29 +39,37 @@ public sealed class FlatErrorsProblemDetailsFactory : ProblemDetailsFactory
             Detail = detail,
             Instance = instance ?? httpContext.Request.Path
         };
-        var errors = TransformModelStateErrors(modelStateDictionary);
-
-        vpd.Extensions["errors"] = errors;
+        
+        vpd.Extensions["errors"] = GetFormattedErrors(modelStateDictionary);
         vpd.Extensions["traceId"] = Activity.Current?.Id ?? httpContext.TraceIdentifier;
-
         vpd.Errors.Clear();
+        
         return vpd;
     }
 
-    private static List<object> TransformModelStateErrors(ModelStateDictionary modelStateDictionary)
-    {
-        return modelStateDictionary
+    private static List<object> GetFormattedErrors(ModelStateDictionary modelState) =>
+        modelState
             .Where(kv => kv.Value?.Errors?.Count > 0)
-            .SelectMany(kv =>
-                kv.Value!.Errors.Select(e => new
-                {
-                    field = kv.Key.StartsWith("$.") ? kv.Key.TrimStart('$', '.') : kv.Key.TrimStart('.'),
-                    message = WebUtility.HtmlEncode(string.IsNullOrWhiteSpace(e.ErrorMessage) && e.Exception != null
-                        ? e.Exception.Message
-                        : e.ErrorMessage)
-                }))
-            .Where(e => !string.Equals(e.field, "body", StringComparison.OrdinalIgnoreCase))
+            .SelectMany(kv => kv.Value!.Errors.Select(e => CreateErrorObject(kv.Key, e)))
+            .Where(e => !IsBodyField(e))
             .Cast<object>()
             .ToList();
-    }
+
+    private static object CreateErrorObject(string key, ModelError error) => new
+    {
+        field = FormatFieldName(key),
+        message = GetErrorMessage(error)
+    };
+
+    private static string FormatFieldName(string key) =>
+        key.StartsWith("$.") ? key[2..] : key.TrimStart('.');
+
+    private static string GetErrorMessage(ModelError error) =>
+        string.IsNullOrWhiteSpace(error.ErrorMessage) && error.Exception != null
+            ? error.Exception.Message
+            : error.ErrorMessage;
+
+    private static bool IsBodyField(object errorObj) =>
+        errorObj.GetType().GetProperty("field")?.GetValue(errorObj) is string field &&
+        string.Equals(field, "body", StringComparison.OrdinalIgnoreCase);
 }
