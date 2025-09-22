@@ -33,7 +33,7 @@ public static class ProblemDetailsExtensions
                 pd.Title = "Validation failed";
                 pd.Detail = "One or more fields are invalid.";
                 pd.Status = StatusCodes.Status400BadRequest;
-                pd.Extensions["errors"] = vex.Errors.Select(e => new { field = e.PropertyName, message = e.ErrorMessage });
+                pd.Extensions["errors"] = vex.Errors.Select(e => new { field = ToCamelCase(e.PropertyName), message = e.ErrorMessage });
                 break;
             
             case DuplicateRequestException dupEx:
@@ -51,5 +51,20 @@ public static class ProblemDetailsExtensions
 
         return Results.Problem(title: HttpUtility.HtmlEncode(pd.Title), detail: HttpUtility.HtmlEncode(pd.Detail), statusCode: pd.Status,
             instance: pd.Instance, extensions: pd.Extensions);
+    }
+
+    private static string ToCamelCase(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return input;
+        
+        return string.Join(".", input.Split('.').Select(FormatPart));
+        
+        static string FormatPart(string part)
+        {
+            var bracketIndex = part.IndexOf('[');
+            return bracketIndex >= 0
+                ? char.ToLowerInvariant(part[0]) + part[1..bracketIndex] + part[bracketIndex..]
+                : char.ToLowerInvariant(part[0]) + part[1..];
+        }
     }
 }
