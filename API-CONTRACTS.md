@@ -1,7 +1,7 @@
 # SmartGate API Contracts
 
 ## Base Information
-- **Base URL**: `https://localhost:5001` (Development)
+- **Base URL**: `http://localhost:5000` (Development)
 - **API Version**: v1
 - **Content-Type**: `application/json`
 - **Authentication**: JWT Bearer Token (Production / Uat) / None (Development)
