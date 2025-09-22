@@ -5,7 +5,7 @@ namespace SmartGate.Domain.Visits.Entities;
 
 public sealed class Truck
 {
-    public const int MaxPlateLength = DomainConstants.Truck.TruckPlateMaxLength;
+    public const int PlateLength = DomainConstants.Truck.TruckPlateLength;
     private const string licensePlateName = DomainConstants.Truck.TruckLicensePlateName;
     public string LicensePlateRaw { get; }
     public string LicensePlateNormalized { get; }
@@ -28,8 +28,8 @@ public sealed class Truck
         if (string.IsNullOrWhiteSpace(normalized))
             throw new InvalidIdentifierException(licensePlateName);
 
-        if (normalized.Length > MaxPlateLength)
-            throw new MaxLengthExceededException(licensePlateName, MaxPlateLength);
+        if (normalized.Length != PlateLength)
+            throw new InvalidIdentifierLengthException(licensePlateName, PlateLength);
 
         this.LicensePlateNormalized = normalized;
     }

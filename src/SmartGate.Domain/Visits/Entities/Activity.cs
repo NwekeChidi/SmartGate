@@ -5,7 +5,7 @@ namespace SmartGate.Domain.Visits.Entities;
 
 public sealed class Activity
 {
-    public const int MaxUnitLength = DomainConstants.Activity.MaxUnitLength;
+    public const int UnitNumberLength = DomainConstants.Activity.UnitNumberLength;
     private const string UnitNumberName = DomainConstants.Activity.UnitNumberName;
     public const string RequiredUnitPrefix = DomainConstants.Activity.RequiredUnitPrefix;
 
@@ -35,8 +35,8 @@ public sealed class Activity
         if (string.IsNullOrWhiteSpace(normalized))
             throw new InvalidIdentifierException(UnitNumberName);
 
-        if (normalized.Length > MaxUnitLength)
-            throw new MaxLengthExceededException(UnitNumberName, MaxUnitLength);
+        if (normalized.Length != UnitNumberLength)
+            throw new InvalidIdentifierLengthException(UnitNumberName, UnitNumberLength);
 
         if (!normalized.StartsWith(RequiredUnitPrefix, StringComparison.Ordinal) ||
             normalized.Length <= RequiredUnitPrefix.Length)

@@ -11,6 +11,10 @@ public sealed class InvalidIdentifierException(string field) : DomainException($
 {
 }
 
+public sealed class InvalidIdentifierLengthException(string field, int requiredLength) : DomainException($"{field} must be exactly {requiredLength} characters long.")
+{
+}
+
 public sealed class MaxLengthExceededException(string field, int max) : DomainException($"{field} exceeds the allowed maximum length of {max}.")
 {
 }

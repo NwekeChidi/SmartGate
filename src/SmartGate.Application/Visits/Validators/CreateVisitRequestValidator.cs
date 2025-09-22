@@ -13,8 +13,9 @@ public sealed partial class CreateVisitRequestValidator : AbstractValidator<Crea
     {
         RuleFor(x => x.TruckLicensePlate)
             .NotEmpty()
-            .MinimumLength(6)
-            .MaximumLength(32);
+            .MinimumLength(7)
+            .MaximumLength(32)
+            .WithMessage("TruckLicensePlate must be valid and 7 characters long.");
 
         RuleFor(x => x.Driver).NotNull();
         RuleFor(x => x.Driver.FirstName)
@@ -25,20 +26,22 @@ public sealed partial class CreateVisitRequestValidator : AbstractValidator<Crea
             .MaximumLength(128);
         RuleFor(x => x.Driver.Id)
             .NotEmpty()
+            .MinimumLength(16)
             .Must(DriverIdRegex.IsMatch)
-            .WithMessage("Driver.Id must match pattern DFDS-<1..11 numeric characters>.");
+            .WithMessage("Driver.Id must match pattern DFDS-<11 numeric characters>.");
 
         RuleFor(x => x.Activities).NotNull().Must(activity => activity.Count > 0).WithMessage("At least one activity is required");
         RuleForEach(x => x.Activities).ChildRules(activity =>
         {
             activity.RuleFor(a => a.UnitNumber)
-                .NotEmpty().MaximumLength(32);
+                .NotEmpty().MinimumLength(10).MaximumLength(32)
+                .WithMessage("UnitNumber must be exactly 10 characters.");
         });
 
         RuleFor(x => x.IdempotencyKey)
             .NotEqual(Guid.Empty)
             .When(x => x.IdempotencyKey is not null)
-            .WithMessage("IdempotencyKey must be a valid .");
+            .WithMessage("IdempotencyKey must be a valid Guid.");
 
         RuleFor(x => x.Status)
             .Equal(VisitStatus.PreRegistered)

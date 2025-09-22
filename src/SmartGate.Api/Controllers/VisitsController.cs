@@ -17,7 +17,6 @@ public sealed class VisitsController : ControllerBase
 
     [HttpPost("create")]
     [Authorize(Policy = AppConstants.Policies.Visits.Write)]
-    [ValidateAntiForgeryToken]
     [ProducesResponseType(typeof(VisitResponse), StatusCodes.Status201Created)]
     public async Task<IResult> Create([FromBody] CreateVisitRequest body, CancellationToken ct)
     {
@@ -50,7 +49,6 @@ public sealed class VisitsController : ControllerBase
 
     [HttpPatch("status_update/{id:guid}")]
     [Authorize(Policy = AppConstants.Policies.Visits.Write)]
-    [ValidateAntiForgeryToken]
     [ProducesResponseType(typeof(VisitResponse), StatusCodes.Status200OK)]
     public async Task<IResult> UpdateStatus([FromRoute] Guid id, [FromBody] UpdateVisitStatusRequest body, CancellationToken ct)
     {

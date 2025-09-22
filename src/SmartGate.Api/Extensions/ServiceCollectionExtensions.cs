@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SmartGate.Api.Auth;
+using SmartGate.Api.Common;
 using SmartGate.Api.ErrorHandling;
 using SmartGate.Application.Abstractions;
 using SmartGate.Application.Visits;
@@ -137,8 +138,7 @@ public static class ServiceCollectionExtensions
         
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "SmartGate API", Version = "v1" });
-
+            c.SwaggerDoc(AppConstants.ApiVersion, new OpenApiInfo { Title = AppConstants.ServiceName, Version = AppConstants.ApiVersion });
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Description = "JWT Authorization header using the Bearer scheme.",

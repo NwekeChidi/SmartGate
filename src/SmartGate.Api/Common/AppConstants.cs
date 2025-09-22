@@ -2,6 +2,8 @@ namespace SmartGate.Api.Common;
 
 public static partial class AppConstants
 {
+    public const string ServiceName = "SmartGate.Api";
+    public const string ApiVersion = "v1";
     public static class RFCErrors
     {
         public const string DefaultErrorType = "https://tools.ietf.org/html/rfc9110#section-15.5.1";

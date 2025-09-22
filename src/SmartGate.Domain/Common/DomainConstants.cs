@@ -11,15 +11,15 @@ public static partial class DomainConstants
 
     public static class Truck
     {
-        public const int TruckPlateMaxLength = 7;
+        public const int TruckPlateLength = 7;
         public const string TruckLicensePlateName = "truckLicensePlate";
 
     }
 
     public static class Activity
     {
-        public const int MaxUnitLength = 10;
+        public const int UnitNumberLength = 10;
         public const string RequiredUnitPrefix = "DFDS";
-        public const string UnitNumberName = "UnitNumber";
+        public const string UnitNumberName = "unitNumber";
     }
 }
