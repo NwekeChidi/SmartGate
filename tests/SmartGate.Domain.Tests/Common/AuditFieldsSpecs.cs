@@ -1,6 +1,7 @@
 using FluentAssertions;
+using SmartGate.Domain.Visits;
 
-namespace SmartGate.Domain.Tests;
+namespace SmartGate.Domain.Tests.Common;
 
 public class AuditFieldsSpecs
 {
@@ -13,7 +14,7 @@ public class AuditFieldsSpecs
         visit.UpdatedAtUTC.Should().Be(t0);
 
         var t1 = t0.AddMinutes(5);
-        visit.UpdateStatus(Visits.VisitStatus.AtGate, "SYSTEM", t1);
+        visit.UpdateStatus(VisitStatus.AtGate, "SYSTEM", t1);
         visit.UpdatedAtUTC.Should().Be(t1);
         visit.CreatedAtUTC.Should().Be(t0);
     }

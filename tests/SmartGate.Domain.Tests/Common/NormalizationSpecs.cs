@@ -2,7 +2,7 @@ using FluentAssertions;
 using SmartGate.Domain.Visits;
 using SmartGate.Domain.Visits.Entities;
 
-namespace SmartGate.Domain.Tests;
+namespace SmartGate.Domain.Tests.Common;
 
 public class NormalizationSpecs
 {

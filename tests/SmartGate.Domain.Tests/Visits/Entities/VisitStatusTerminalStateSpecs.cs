@@ -1,7 +1,7 @@
 using FluentAssertions;
 using SmartGate.Domain.Visits;
 
-namespace SmartGate.Domain.Tests;
+namespace SmartGate.Domain.Tests.Visits.Entities;
 
 public class VisitStatusTerminalStateSpecs
 {

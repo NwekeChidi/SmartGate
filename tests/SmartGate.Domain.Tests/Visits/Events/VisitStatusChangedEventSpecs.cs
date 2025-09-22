@@ -2,7 +2,7 @@ using FluentAssertions;
 using SmartGate.Domain.Visits;
 using SmartGate.Domain.Visits.Events;
 
-namespace SmartGate.Domain.Tests;
+namespace SmartGate.Domain.Tests.Visits.Events;
 
 public class VisitStatusChangedEventSpecs
 {
