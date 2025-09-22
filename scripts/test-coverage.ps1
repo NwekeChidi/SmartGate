@@ -25,7 +25,7 @@ try {
   $reports = Get-ChildItem -Path $ResultsDir -Recurse -Filter "coverage.cobertura.xml" -File
   if (-not $reports) { throw "No coverage files found" }
 
-  & reportgenerator -reports:($reports.FullName -join ";") -targetdir:"$CoverageOutDir" -reporttypes:"HtmlInline;TextSummary" -assemblyfilters:"-SmartGate.Infrastructure;-SmartGate.Domain.Tests" -filefilters:"-**/obj/**;-**/bin/**;-**/*Generator*.g.cs;-**/Program.cs"
+  & reportgenerator -reports:($reports.FullName -join ";") -targetdir:"$CoverageOutDir" -reporttypes:"HtmlInline;TextSummary" -assemblyfilters:"-SmartGate.Infrastructure;-SmartGate.Domain.Tests" -filefilters:"-**/obj/**;-**/bin/**;-**/*Generator*.g.cs;-**/Program.cs;-**/Extensions/**"
 
   $summary = Join-Path $CoverageOutDir "Summary.txt"
   if (Test-Path $summary) { Get-Content $summary }
