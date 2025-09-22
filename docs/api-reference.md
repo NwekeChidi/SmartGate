@@ -1,7 +1,7 @@
 # API Reference
 
 ## Base Information
-- **Base URL**: `https://localhost:5000/https://localhost:5001/https://localhost:5211` (Development)
+- **Base URL**: `http://localhost:5000` (Development)
 - **API Version**: v1
 - **Content-Type**: `application/json`
 - **Authentication**: JWT Bearer Token (Production / Uat) / None (Development)

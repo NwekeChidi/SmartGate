@@ -151,8 +151,8 @@ PreRegistered → AtGate → OnSite → Completed
    ```
 
 3. **Access the API**
-   - API: `https://localhost:5001`
-   - Swagger UI: `https://localhost:5001/swagger`
+   - API: `http://localhost:5000`
+   - Swagger UI: `http://localhost:5000/swagger/`
 
 ### Manual Setup
 
