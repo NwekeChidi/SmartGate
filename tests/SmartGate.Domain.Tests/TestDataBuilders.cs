@@ -5,7 +5,7 @@ namespace SmartGate.Domain.Tests;
 
 public static class TestData
 {
-    public static Truck Truck(string licencePlateRaw = " ab-12 cd ") => new(licencePlateRaw);
+    public static Truck Truck(string licencePlateRaw = " ab-123cd ") => new(licencePlateRaw);
     public static Driver Driver(
         string firstName = "Anakin",
         string lastName = "Skywalker",
@@ -25,7 +25,7 @@ public static class TestData
         => new(
             truck ?? Truck(),
             driver ?? Driver(),
-            activities ?? [Delivery("DFDS11001")],
+            activities ?? [Delivery("DFDS-110012")],
             createdBy: "TEST",
             id: null,
             nowUTC: nowUTC);

@@ -29,12 +29,12 @@ public class VisitServiceTests
         var service = TestHelpers.Service(repo, clock: clock, user: user, idem: idem);
 
         var req = new CreateVisitRequest(
-            TruckLicensePlate: " abc 1234 ",
-            Driver: new DriverDto("  Luke ", " Skywalker ", "DFDS-2024546375"),
+            TruckLicensePlate: "abc123d",
+            Driver: new DriverDto("  Luke ", " Skywalker ", "DFDS-12345678901"),
             Activities:
             [
-                new ActivityDto(ActivityType.Delivery, "dfds-123456 "),
-                new ActivityDto(ActivityType.Collection, " dfds-654321")
+                new ActivityDto(ActivityType.Delivery, "dfds123456"),
+                new ActivityDto(ActivityType.Collection, "dfds654321")
             ],
             Status: VisitStatus.PreRegistered,
             IdempotencyKey: null
@@ -43,7 +43,7 @@ public class VisitServiceTests
         var response = await service.CreateVisitAsync(req);
 
         // assert
-        response.TruckLicensePlate.Should().Be("ABC1234");
+        response.TruckLicensePlate.Should().Be("ABC123D");
         response.Activities.Should().HaveCount(2);
         response.Activities.Select(a => a.UnitNumber).Should().BeEquivalentTo("DFDS123456", "DFDS654321");
 
@@ -56,7 +56,7 @@ public class VisitServiceTests
         response.UpdatedBy.Should().Be("Yoda");
 
         saved.Should().NotBeNull();
-        saved!.Truck.LicensePlateNormalized.Should().Be("ABC1234");
+        saved!.Truck.LicensePlateNormalized.Should().Be("ABC123D");
         saved!.Activities.Should().HaveCount(2);
     }
 
@@ -67,9 +67,9 @@ public class VisitServiceTests
         var visitId = Guid.NewGuid();
 
         var exisiting = new Visit(
-            TestData.Truck("ABC123"),
+            TestData.Truck("ABC123D"),
             TestData.Driver("Senator", "Palpatine"),
-            [TestData.Delivery("DFDS100")],
+            [TestData.Delivery("DFDS-100123")],
             id: visitId,
             nowUTC: DateTime.UtcNow,
             createdBy: "Yoda"
@@ -81,12 +81,12 @@ public class VisitServiceTests
         var service = TestHelpers.Service(repo, idem: idem);
 
         var req = new CreateVisitRequest(
-            TruckLicensePlate: " abc 12345 ",
-            Driver: new DriverDto("  Luke ", " Skywalker ", "DFDS-199854635"),
+            TruckLicensePlate: "abc123d",
+            Driver: new DriverDto("  Luke ", " Skywalker ", "DFDS-12345678901"),
             Activities:
             [
-                new ActivityDto(ActivityType.Delivery, "dfds-123456 "),
-                new ActivityDto(ActivityType.Collection, " dfds-654321")
+                new ActivityDto(ActivityType.Delivery, "dfds123456"),
+                new ActivityDto(ActivityType.Collection, "dfds654321")
             ],
             Status: VisitStatus.PreRegistered,
             IdempotencyKey: Guid.NewGuid()
@@ -111,9 +111,9 @@ public class VisitServiceTests
         var clock = Substitute.For<IClock>();
 
         var visit = new Visit(
-            TestData.Truck("ABC123"),
+            TestData.Truck("ABC123D"),
             TestData.Driver("Senator", "Palpatine"),
-            [TestData.Delivery("DFDS100")],
+            [TestData.Delivery("DFDS-100123")],
             nowUTC: createdTime,
             createdBy: user.Subject
         );
@@ -141,16 +141,16 @@ public class VisitServiceTests
     {
         var repo = Substitute.For<IVisitRepository>();
         var visit1 = new Visit(
-            new Truck(" AB-12 CD "),
+            new Truck(" AB-12CDE "),
             new Driver("Gojo", "Satoru", "DFDS-20223547432"),
-            [new Activity(ActivityType.Delivery, " dfds3009 ")],
+            [new Activity(ActivityType.Delivery, " dfds-300912 ")],
             nowUTC: new DateTime(2025, 1, 1, 9, 0, 0, DateTimeKind.Utc),
             createdBy: "Sukuna");
 
         var visit2 = new Visit(
-            new Truck(" EF-34 GH "),
+            new Truck(" EF-34GHI "),
             new Driver("Luke", "Skywalker", "DFDS-20213547328"),
-            [new Activity(ActivityType.Collection, " dfds3006 ")],
+            [new Activity(ActivityType.Collection, " dfds-300623 ")],
             nowUTC: new DateTime(2025, 1, 1, 9, 0, 0, DateTimeKind.Utc),
             createdBy: "Darth");
 
@@ -168,16 +168,16 @@ public class VisitServiceTests
         page.Items.Should().HaveCount(2);
 
         var first = page.Items[0];
-        first.TruckLicensePlate.Should().Be("EF34GH");
+        first.TruckLicensePlate.Should().Be("EF34GHI");
         first.DriverInformation.FirstName.Should().Be("Luke");
         first.DriverInformation.LastName.Should().Be("Skywalker");
-        first.Activities.Should().ContainSingle(a => a.Type == ActivityType.Collection && a.UnitNumber == "DFDS3006");
+        first.Activities.Should().ContainSingle(a => a.Type == ActivityType.Collection && a.UnitNumber == "DFDS300623");
 
         var second = page.Items[1];
-        second.TruckLicensePlate.Should().Be("AB12CD");
+        second.TruckLicensePlate.Should().Be("AB12CDE");
         second.DriverInformation.FirstName.Should().Be("Gojo");
         second.DriverInformation.LastName.Should().Be("Satoru");
-        second.Activities.Should().ContainSingle(a => a.Type == ActivityType.Delivery && a.UnitNumber == "DFDS3009");
+        second.Activities.Should().ContainSingle(a => a.Type == ActivityType.Delivery && a.UnitNumber == "DFDS300912");
 
     }
 
@@ -216,9 +216,9 @@ public class VisitServiceTests
         var service = TestHelpers.Service(repo, idem: idem);
         
         var req = new CreateVisitRequest(
-            "ABC123",
-            new DriverDto("Sasuke", "Uchiha", "DFDS-123"),
-            [new ActivityDto(ActivityType.Delivery, "DFDS-456")],
+            "ABC123D",
+            new DriverDto("Sasuke", "Uchiha", "DFDS-12345678901"),
+            [new ActivityDto(ActivityType.Delivery, "DFDS456789")],
             VisitStatus.PreRegistered,
             key
         );
@@ -234,9 +234,9 @@ public class VisitServiceTests
         var repo = Substitute.For<IVisitRepository>();
         var cache = new MemoryCache(new MemoryCacheOptions());
         var visit = new Visit(
-            new Truck("ABC123"),
-            new Driver("Luke", "Skywalker", "DFDS-123"),
-            [new Activity(ActivityType.Delivery, "DFDS456")],
+            new Truck("ABC123D"),
+            new Driver("Luke", "Skywalker", "DFDS-12345678901"),
+            [new Activity(ActivityType.Delivery, "DFDS-456789")],
             nowUTC: DateTime.UtcNow,
             createdBy: "Test"
         );
@@ -258,9 +258,9 @@ public class VisitServiceTests
 
         // Create visit - should invalidate cache
         var createReq = new CreateVisitRequest(
-            "DEF456",
-            new DriverDto("Han", "Solo", "DFDS-789"),
-            [new ActivityDto(ActivityType.Collection, "DFDS999")],
+            "DEF456G",
+            new DriverDto("Han", "Solo", "DFDS-78901234567"),
+            [new ActivityDto(ActivityType.Collection, "DFDS999012")],
             VisitStatus.PreRegistered,
             null
         );
@@ -276,16 +276,16 @@ public class VisitServiceTests
     {
         var repo = Substitute.For<IVisitRepository>();
         var drivers = Substitute.For<IDriverRepository>();
-        var existingDriver = new Driver("Sasuke", "Uchiha", "DFDS-123");
+        var existingDriver = new Driver("Sasuke", "Uchiha", "DFDS-12345678901");
         
-        drivers.GetByIdAsync("DFDS-123", Arg.Any<CancellationToken>()).Returns(existingDriver);
+        drivers.GetByIdAsync("DFDS-12345678901", Arg.Any<CancellationToken>()).Returns(existingDriver);
         
         var service = TestHelpers.Service(repo, driver: drivers);
         
         var req = new CreateVisitRequest(
-            "ABC123",
-            new DriverDto("Sasuke", "Uchiha", "dfds-123"),
-            [new ActivityDto(ActivityType.Delivery, "DFDS-456")],
+            "ABC123D",
+            new DriverDto("Sasuke", "Uchiha", "dfds-12345678901"),
+            [new ActivityDto(ActivityType.Delivery, "DFDS456789")],
             VisitStatus.PreRegistered,
             null
         );
@@ -307,9 +307,9 @@ public class VisitServiceTests
         var service = TestHelpers.Service(repo, idem: idem);
         
         var req = new CreateVisitRequest(
-            "ABC123",
-            new DriverDto("Sasuke", "Uchiha", "DFDS-123"),
-            [new ActivityDto(ActivityType.Delivery, "DFDS-456")],
+            "ABC123D",
+            new DriverDto("Sasuke", "Uchiha", "DFDS-12345678901"),
+            [new ActivityDto(ActivityType.Delivery, "DFDS456789")],
             VisitStatus.PreRegistered,
             key
         );
