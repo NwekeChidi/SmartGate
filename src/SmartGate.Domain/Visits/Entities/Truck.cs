@@ -20,7 +20,6 @@ public sealed class Truck
     public Truck(string licensePlateRaw)
     {
         if (string.IsNullOrWhiteSpace(licensePlateRaw))
-            // amazonq-ignore-next-line
             throw new NullReferenceInAggregateException(licensePlateName);
 
         this.LicensePlateRaw = licensePlateRaw;
