@@ -124,7 +124,7 @@ PreRegistered → AtGate → OnSite → Completed
 
 ### Development Dependencies
 - `Microsoft.EntityFrameworkCore.Design` (8.0.20)
-- Various testing packages (xUnit, Moq, etc.)
+- Various testing packages (xUnit with NSubstitute)
 
 ## Getting Started
 
