@@ -1,4 +1,4 @@
-# SmartGate API Contracts
+# API Reference
 
 ## Base Information
 - **Base URL**: `https://localhost:5001` (Development)
@@ -85,23 +85,9 @@ Authorization: Bearer <jwt-token>
 }
 ```
 
-#### Validation Error Scenarios
+#### Common Validation Errors
 
 **Invalid Driver ID Format:**
-```json
-{
-  "truckLicensePlate": "ABC123D",
-  "driver": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "id": "INVALID-ID"
-  },
-  "activities": [{"type": "Delivery", "unitNumber": "DFDS123456"}],
-  "status": "PreRegistered"
-}
-```
-
-**Response:** `400 Bad Request`
 ```json
 {
   "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
@@ -123,58 +109,7 @@ Authorization: Bearer <jwt-token>
 }
 ```
 
-**Invalid Drvier.Id Length:**
-```json
-{
-  "truckLicensePlate": "ac6-2347",
-  "driver": {
-    "firstName": "Grace",
-    "lastName": "Mercy",
-    "id": "dfds-1234567890"
-  },
-  "activities": [
-    {
-      "type": "Delivery",
-      "unitNumber": "dfds123456"
-    }
-  ],
-  "status": "PreRegistered"
-}
-```
-
-**Response** `400 Bad Request`
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-  "title": "Validation failed",
-  "status": "400",
-  "detail": "One or more fields are invalid.",
-  "instance": "/v1/Visits/create",
-  "traceId": "0HNFPOH18N8F0:00000003",
-  "errors": [
-    {
-      "field": "driver.id",
-      "message": "'Driver Id' must be 16 characters in length. You entered 15 characters."
-    }
-  ]
-}
-```
-
 **Invalid License Plate Length:**
-```json
-{
-  "truckLicensePlate": "ABC12",
-  "driver": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "id": "DFDS-12345678901"
-  },
-  "activities": [{"type": "Delivery", "unitNumber": "DFDS-123456"}],
-  "status": "PreRegistered"
-}
-```
-
-**Response:** `400 Bad Request`
 ```json
 {
   "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
@@ -193,20 +128,6 @@ Authorization: Bearer <jwt-token>
 ```
 
 **Invalid Unit Number:**
-```json
-{
-  "truckLicensePlate": "ABC123D",
-  "driver": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "id": "DFDS-12345678901"
-  },
-  "activities": [{"type": "Delivery", "unitNumber": "DF9S123"}],
-  "status": "PreRegistered"
-}
-```
-
-**Response:**
 ```json
 {
   "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
@@ -228,101 +149,7 @@ Authorization: Bearer <jwt-token>
 }
 ```
 
-**Invalid Unit Number Length:**
-```json
-{
-  "truckLicensePlate": "ABC123D",
-  "driver": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "id": "DFDS-12345678901"
-  },
-  "activities": [{"type": "Delivery", "unitNumber": "DFDS123"}],
-  "status": "PreRegistered"
-}
-```
-
-**Response:** `400 Bad Request`
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-  "title": "Validation failed",
-  "status": "400",
-  "detail": "One or more fields are invalid.",
-  "instance": "/v1/Visits/create",
-  "traceId": "0HNFPOH18N8F2:00000001",
-  "errors": [
-    {
-      "field": "activities[0].unitNumber",
-      "message": "'Unit Number' must be 10 characters in length. You entered 7 characters."
-    }
-  ]
-}
-```
-
-**Missing Required Fields:**
-```json
-{
-  "truckLicensePlate": "",
-  "driver": {
-    "firstName": "",
-    "lastName": "Doe",
-    "id": "DFDS-12345678901"
-  },
-  "activities": [{"type": "Delivery", "unitNumber": "DFDS-123456"}],
-  "status": "PreRegistered"
-}
-```
-
-**Response:** `400 Bad Request`
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-  "title": "Validation failed",
-  "status": "400",
-  "detail": "One or more fields are invalid.",
-  "instance": "/v1/Visits/create",
-  "traceId": "0HNFPPCKRD62R:00000001",
-  "errors": [
-    {
-      "field": "truckLicensePlate",
-      "message": "'Truck License Plate' must not be empty."
-    },
-    {
-      "field": "truckLicensePlate",
-      "message": "'Truck License Plate' must be 7 characters in length. You entered 0 characters."
-    },
-    {
-      "field": "driver.firstName",
-      "message": "'Driver First Name' must not be empty."
-    },
-    {
-      "field": "activities[0].unitNumber",
-      "message": "activity.unitNumber must match pattern DFDS<6 numeric characters>."
-    },
-    {
-      "field": "activities[0].unitNumber",
-      "message": "'Unit Number' must be 10 characters in length. You entered 11 characters."
-    }
-  ]
-}
-```
-
-**Creating With Empty Activities**
-```json
-{
-  "truckLicensePlate": "ABC123D",
-  "driver": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "id": "DFDS-12345678901"
-  },
-  "activities": [],
-  "status": "PreRegistered"
-}
-```
-
-**Response:** `400 Bad Request`
+**Empty Activities:**
 ```json
 {
   "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
@@ -340,21 +167,7 @@ Authorization: Bearer <jwt-token>
 }
 ```
 
-**Invalid Status:**
-```json
-{
-  "truckLicensePlate": "ABC123D",
-  "driver": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "id": "DFDS-12345678901"
-  },
-  "activities": [{"type": "Delivery", "unitNumber": "DFDS123456"}],
-  "status": "AtGate"
-}
-```
-
-**Response:** `400 Bad Request`
+**Invalid Status for New Visit:**
 ```json
 {
   "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
@@ -371,84 +184,6 @@ Authorization: Bearer <jwt-token>
   ]
 }
 ```
-
-**Invalid Activities Enum:**
-```json
-{
-  "truckLicensePlate": "ABC123D",
-  "driver": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "id": "DFDS-12345678901"
-  },
-  "activities": [{"type": "Return", "unitNumber": "DFDS123456"}],
-  "status": "PreRegistered"
-}
-```
-
-**Response:** `400 Bad Request`
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-  "title": "One or more validation errors occurred.",
-  "status": "400",
-  "instance": "/v1/Visits/create",
-  "errors": [
-    {
-      "field": "activities[0].type",
-      "message": "Invalid ActivityType: 'Return'. Allowed: Delivery, Collection."
-    }
-  ],
-  "traceId": "00-3ed7a60bd00903ff19251d5fc64484bd-28328ccd823fdccf-00"
-}
-```
-
-**Invalid Status Enum:**
-```json
-{
-  "truckLicensePlate": "ABC123D",
-  "driver": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "id": "DFDS-12345678901"
-  },
-  "activities": [{"type": "Collection", "unitNumber": "DFDS123456"}],
-  "status": "Pending"
-}
-```
-
-**Response:** `400 Bad Request`
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-  "title": "One or more validation errors occurred.",
-  "status": "400",
-  "instance": "/v1/Visits/create",
-  "errors": [
-    {
-      "field": "status",
-      "message": "Invalid VisitStatus: 'Pending'. Allowed: PreRegistered, AtGate, OnSite, Completed."
-    }
-  ],
-  "traceId": "00-cfa36cdb4a05464f8dc6b2c50af7a757-4f9c7a0c8dbc0179-00"
-}
-```
-
-#### Authorization Error
-
-**Request without proper scope:**
-
-**Response:** `403 Forbidden`
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.3",
-  "title": "Forbidden",
-  "status": 403,
-  "detail": "Insufficient permissions."
-}
-```
-
----
 
 ### 2. List Visits
 
@@ -532,22 +267,6 @@ Authorization: Bearer <jwt-token>
 }
 ```
 
-#### Authorization Error
-
-**Request without proper scope:**
-
-**Response:** `403 Forbidden`
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.3",
-  "title": "Forbidden",
-  "status": 403,
-  "detail": "Insufficient permissions."
-}
-```
-
----
-
 ### 3. Update Visit Status
 
 **Endpoint:** `PATCH /v1/visits/status_update/{id}`  
@@ -587,27 +306,9 @@ Authorization: Bearer <jwt-token>
 }
 ```
 
-#### Success Scenario - Idempotent Update
+#### Error Scenarios
 
-**Request:** `PATCH /v1/visits/status_update/123e4567-e89b-12d3-a456-426614174000`
-```json
-{
-  "newStatus": "AtGate"
-}
-```
-
-**Response:** `200 OK` (Same response, no timestamp change)
-
-#### Error Scenario - Visit Not Found
-
-**Request:** `PATCH /v1/visits/status_update/999e9999-e89b-12d3-a456-426614174999`
-```json
-{
-  "newStatus": "AtGate"
-}
-```
-
-**Response:** `404 Not Found`
+**Visit Not Found:**
 ```json
 {
   "type": "https://tools.ietf.org/html/rfc9110#section-15.5.5",
@@ -619,16 +320,7 @@ Authorization: Bearer <jwt-token>
 }
 ```
 
-#### Error Scenario - Invalid Status Transition
-
-**Request:** `PATCH /v1/visits/status_update/123e4567-e89b-12d3-a456-426614174000`
-```json
-{
-  "newStatus": "Completed"
-}
-```
-
-**Response:** `400 Bad Request`
+**Invalid Status Transition:**
 ```json
 {
   "type": "https://tools.ietf.org/html/rfc9110#section-15.5.10",
@@ -640,16 +332,7 @@ Authorization: Bearer <jwt-token>
 }
 ```
 
-#### Error Scenario - Terminal State Violation
-
-**Request:** `PATCH /v1/visits/status_update/456e7890-e89b-12d3-a456-426614174001`
-```json
-{
-  "newStatus": "OnSite"
-}
-```
-
-**Response:** `400 Bad Request`
+**Terminal State Violation:**
 ```json
 {
   "type": "https://tools.ietf.org/html/rfc9110#section-15.5.10",
@@ -660,8 +343,6 @@ Authorization: Bearer <jwt-token>
   "traceId": "0HNFPOH18N8F6:0000000E"
 }
 ```
-
----
 
 ### 4. Health Check
 
@@ -719,6 +400,18 @@ Authorization: Bearer <jwt-token>
   "title": "Unauthorized",
   "status": 401,
   "detail": "Authentication required."
+}
+```
+
+### Authorization Error
+
+**Response:** `403 Forbidden`
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.3",
+  "title": "Forbidden",
+  "status": 403,
+  "detail": "Insufficient permissions."
 }
 ```
 

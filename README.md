@@ -64,9 +64,9 @@ smartgate/
 
 ### Domain Entities
 - **Visit**: Core aggregate containing truck, driver, and activity information
-- **Driver**: Driver entity with DFDS-specific ID validation (format: DFDS-{1-11 digits})
-- **Truck**: Truck information with license plate validation
-- **Activity**: Individual activities (Delivery/Collection) with unit numbers
+- **Driver**: Driver entity with DFDS-specific ID validation (format: DFDS-{11 digits}, exactly 16 characters)
+- **Truck**: Truck information with license plate validation (exactly 7 characters after normalization)
+- **Activity**: Individual activities (Delivery/Collection) with unit numbers (exactly 10 characters, pattern: DFDS<6 numeric characters>)
 
 ### Visit Status Flow
 ```
@@ -102,7 +102,7 @@ PreRegistered → AtGate → OnSite → Completed
 
 ### Prerequisites
 - .NET 8.0 SDK
-- Docker (for PostgreSQL)
+- Docker (for PostgreSQL) - **Docker daemon must be running**
 - PowerShell (for scripts)
 
 ### Quick Start
@@ -113,7 +113,11 @@ PreRegistered → AtGate → OnSite → Completed
    cd smartgate
    ```
 
-2. **Start the application (Development)**
+2. **Ensure Docker is running**
+   - Start Docker Desktop or Docker daemon
+   - Verify with: `docker --version`
+
+3. **Start the application (Development)**
    ```powershell
    .\scripts\start-smartgate.ps1 -Env dev
    ```
@@ -190,14 +194,21 @@ Runs tests and generates coverage reports.
 
 ## API Endpoints
 
+For detailed API contracts with comprehensive request/response examples and validation scenarios, see [API-CONTRACTS.md](API-CONTRACTS.md).
+
 ### Visits Controller (`/v1/visits`)
 
-- **POST** `/v1/visits/create` - Create new visit
-- **GET** `/v1/visits` - List visits (paginated)
-- **PATCH** `/v1/visits/status_update/{id}` - Update visit status
+- **POST** `/v1/visits/create` - Create new visit (requires `visits:write` scope)
+- **GET** `/v1/visits` - List visits with pagination (requires `visits:read` scope)
+- **PATCH** `/v1/visits/status_update/{id}` - Update visit status (requires `visits:write` scope)
 
 ### Health Check
-- **GET** `/health` - Application health status
+- **GET** `/health` - Application health status (no authentication required)
+
+### Authentication & Authorization
+- **Development Mode**: No authentication required when `Auth:UseDevAuth = true`
+- **Production/UAT Mode**: JWT Bearer token authentication with scope-based authorization
+- **Scopes**: `visits:read` for read operations, `visits:write` for create/update operations
 
 ## Configuration
 
@@ -213,10 +224,12 @@ Runs tests and generates coverage reports.
 }
 ```
 
-### Production Configuration
+### Production/UAT Configuration
 - Set `Auth:UseDevAuth` to `false`
 - Configure `Jwt:SigningKey`, `Jwt:Authority`, `Jwt:Audience`
 - Update connection strings for production database
+- Enable rate limiting (120 requests per minute per client)
+- Configure proper logging levels
 
 ## Testing
 

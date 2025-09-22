@@ -29,13 +29,14 @@ The central entity representing a truck visit.
 Represents truck driver information.
 
 **Properties:**
-- `Id`: DFDS driver identifier (format: DFDS-{1-11 digits})
+- `Id`: DFDS driver identifier (format: DFDS-{11 digits})
 - `FirstName`: Driver's first name (max 128 chars)
 - `LastName`: Driver's last name (max 128 chars)
 
 **Business Rules:**
 - Driver ID must start with "DFDS-" prefix
 - Driver ID suffix must be 1-11 numeric characters
+- Total driver ID length must be exactly 16 characters
 - Names cannot be empty and are trimmed
 - Driver ID is normalized to uppercase
 
@@ -47,7 +48,8 @@ Represents truck information.
 
 **Business Rules:**
 - License plate is normalized (uppercase, alphanumeric only)
-- Must be between 6-32 characters after normalization
+- Must be exactly 7 characters after normalization
+- Input can be 7-32 characters before normalization
 
 ### Activity
 Represents individual activities during a visit.
@@ -59,8 +61,10 @@ Represents individual activities during a visit.
 
 **Business Rules:**
 - Unit number must start with "DFDS"
+- Unit number must follow pattern: DFDS<6 numeric characters>
 - Unit number is normalized (uppercase, alphanumeric only)
-- Maximum length of 32 characters
+- Must be exactly 10 characters after normalization
+- Input can be 10-32 characters before normalization
 
 ## Enumerations
 
@@ -94,6 +98,12 @@ Raised when a visit's status is updated.
 - `OldStatus`: Previous status
 - `NewStatus`: New status
 - `ChangedAt`: Timestamp of change
+- `ChangedBy`: User who made the change
+
+**Business Rules:**
+- Event is raised only for actual status changes (not idempotent updates)
+- Contains audit information for tracking purposes
+- Used for cache invalidation and external system notifications
 
 ## Business Rules Summary
 
@@ -103,11 +113,13 @@ Raised when a visit's status is updated.
 - Driver IDs: Uppercase, preserve DFDS- prefix format
 
 ### Validation Rules
-- **Driver ID**: Must match pattern `DFDS-[0-9]{1,11}`
-- **License Plate**: 6-32 characters after normalization
-- **Unit Number**: Must start with "DFDS", max 32 characters
+- **Driver ID**: Must match pattern `DFDS-[0-9]{1,11}`, exactly 16 characters total
+- **License Plate**: Exactly 7 characters after normalization (7-32 characters input)
+- **Unit Number**: Must match pattern `DFDS<6 numeric characters>`, exactly 10 characters after normalization (10-32 characters input)
 - **Names**: Required, max 128 characters, trimmed
 - **Activities**: At least one required per visit
+- **Status**: New visits must have status 'PreRegistered'
+- **Idempotency Key**: Valid GUID if provided
 
 ### State Transitions
 ```
@@ -119,13 +131,15 @@ PreRegistered → AtGate → OnSite → Completed
 
 ## Domain Exceptions
 
-- `ActivitiesRequiredException`: No activities provided
-- `InvalidStatusTransitionException`: Invalid state transition attempted
-- `CompletedIsTerminalException`: Attempt to modify completed visit
+- `ActivitiesRequiredException`: "At least one activity is required."
+- `InvalidStatusTransitionException`: "Transition from {from} to {to} is not allowed."
+- `CompletedIsTerminalException`: "Visit is already Completed and cannot be changed."
 - `InvalidDriverIdException`: Driver ID format violation
-- `MaxLengthExceededException`: Field exceeds maximum length
-- `NullReferenceInAggregateException`: Required field is null
-- `UnitNumberMustStartWithDFDSException`: Unit number format violation
+- `InvalidIdentifierException`: "Please provide a valid {field}."
+- `InvalidIdentifierLengthException`: "{field} must be exactly {requiredLength} characters long."
+- `MaxLengthExceededException`: "{field} exceeds the allowed maximum length of {max}."
+- `NullReferenceInAggregateException`: "{field} cannot be null."
+- `UnitNumberMustStartWithDFDSException`: "UnitNumber must start with 'DFDS'."
 
 ## Aggregate Boundaries
 - **Visit** is the aggregate root containing:
@@ -134,3 +148,17 @@ PreRegistered → AtGate → OnSite → Completed
   - Collection of Activities
 - Each aggregate maintains consistency within its boundary
 - Cross-aggregate references use IDs only
+
+## API Integration
+
+For complete API request/response examples and detailed validation scenarios, see [API-CONTRACTS.md](../API-CONTRACTS.md).
+
+### Common Validation Error Patterns
+- Driver ID length: "'Driver Id' must be 16 characters in length. You entered X characters."
+- Driver ID pattern: "driver.id must match pattern DFDS-<11 numeric characters>."
+- License plate length: "'Truck License Plate' must be 7 characters in length. You entered X characters."
+- Unit number length: "'Unit Number' must be 10 characters in length. You entered X characters."
+- Unit number pattern: "activity.unitNumber must match pattern DFDS<6 numeric characters>."
+- Empty activities: "At least one activity is required"
+- Invalid status for new visits: "New visits must have status 'PreRegistered'"
+- Invalid enum values: "Invalid {EnumType}: '{value}'. Allowed: {allowedValues}."

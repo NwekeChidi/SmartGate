@@ -106,13 +106,13 @@ Feature/
 ### Test Structure
 ```csharp
 [Fact]
-public void Should_ThrowException_When_InvalidInput()
+public void Should_ThrowException_When_InvalidDriverId()
 {
     // Arrange
     var invalidInput = "invalid";
     
     // Act & Assert
-    var exception = Assert.Throws<DomainException>(() => 
+    var exception = Assert.Throws<InvalidDriverIdException>(() => 
         new Driver("John", "Doe", invalidInput));
     
     Assert.Contains("DFDS-", exception.Message);
@@ -128,12 +128,25 @@ public void Should_ThrowException_When_InvalidInput()
 ```csharp
 public class VisitBuilder
 {
-    private string _licensePlate = "ABC123";
-    private Driver _driver = new("John", "Doe", "DFDS-12345");
+    private string _licensePlate = "ABC123D";  // 7 chars after normalization
+    private Driver _driver = new("John", "Doe", "DFDS-12345678901");  // 16 chars total
+    private List<Activity> _activities = new() { new(ActivityType.Delivery, "DFDS123456") };  // 10 chars, DFDS + 6 digits
     
     public VisitBuilder WithLicensePlate(string plate)
     {
         _licensePlate = plate;
+        return this;
+    }
+    
+    public VisitBuilder WithDriver(string firstName, string lastName, string id)
+    {
+        _driver = new Driver(firstName, lastName, id);
+        return this;
+    }
+    
+    public VisitBuilder WithActivity(ActivityType type, string unitNumber)
+    {
+        _activities = new List<Activity> { new(type, unitNumber) };
         return this;
     }
     
@@ -194,8 +207,36 @@ public class CreateVisitRequestValidator : AbstractValidator<CreateVisitRequest>
     {
         RuleFor(x => x.TruckLicensePlate)
             .NotEmpty()
-            .MinimumLength(6)
+            .WithMessage("'Truck License Plate' must not be empty.")
+            .MinimumLength(7)  // Must normalize to exactly 7 chars
+            .WithMessage("'Truck License Plate' must be 7 characters in length. You entered {TotalLength} characters.")
             .MaximumLength(32);
+            
+        RuleFor(x => x.Driver.Id)
+            .NotEmpty()
+            .WithMessage("'Driver Id' must not be empty.")
+            .Length(16)  // Must be exactly 16 chars
+            .WithMessage("'Driver Id' must be 16 characters in length. You entered {TotalLength} characters.")
+            .Must(id => Regex.IsMatch(id, @"^(?i)dfds-[0-9]{1,11}$"))
+            .WithMessage("driver.id must match pattern DFDS-<11 numeric characters>.");
+            
+        RuleFor(x => x.Activities)
+            .NotEmpty()
+            .WithMessage("At least one activity is required");
+            
+        RuleForEach(x => x.Activities).ChildRules(activity => {
+            activity.RuleFor(a => a.UnitNumber)
+                .NotEmpty()
+                .WithMessage("'Unit Number' must not be empty.")
+                .Length(10)  // Must normalize to exactly 10 chars
+                .WithMessage("'Unit Number' must be 10 characters in length. You entered {TotalLength} characters.")
+                .Must(unit => Regex.IsMatch(unit, @"^(?i)dfds[0-9]{6}$"))
+                .WithMessage("activity.unitNumber must match pattern DFDS<6 numeric characters>.");
+        });
+            
+        RuleFor(x => x.Status)
+            .Equal(VisitStatus.PreRegistered)
+            .WithMessage("New visits must have status 'PreRegistered'");
     }
 }
 ```
@@ -280,11 +321,19 @@ public async Task<VisitResponse> CreateVisitAsync(CreateVisitRequest request, Ca
 docker ps -a
 
 # View application logs
-docker logs smartgate-api
+docker logs smartgate-db
 
 # Check database connectivity
 docker exec smartgate-db pg_isready -U postgres
 
+# Connect to database
+docker exec -it smartgate-db psql -U postgres -d smartgate
+
 # View EF migrations
 dotnet ef migrations list --project src/SmartGate.Infrastructure
+
+# Test API endpoints (requires valid JWT in production)
+curl -X GET "https://localhost:5001/v1/visits?page=1&pageSize=5" \
+  -H "Authorization: Bearer <jwt-token>" \
+  -H "Content-Type: application/json"
 ```
