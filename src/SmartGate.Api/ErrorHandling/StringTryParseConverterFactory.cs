@@ -65,9 +65,7 @@ public sealed class StringTryParseConverterFactory : JsonConverterFactory
         if (reader.TokenType != JsonTokenType.String)
             throw new JsonException($"Expected string for {typeName}.");
 
-        var raw = reader.GetString();
-        if (raw is null)
-            throw new JsonException($"Null string value for {typeName}.");
+        var raw = reader.GetString()!;
         if (string.IsNullOrWhiteSpace(raw))
             throw new JsonException($"{typeName} cannot be empty.");
         return raw;
