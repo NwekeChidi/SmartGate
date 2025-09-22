@@ -3,7 +3,7 @@ using SmartGate.Application.Visits.Dto;
 using SmartGate.Application.Visits.Validators;
 using SmartGate.Domain.Visits;
 
-namespace SmartGate.Application.Tests;
+namespace SmartGate.Application.Tests.Visits.Validators;
 
 public class ValidatorsTests
 {

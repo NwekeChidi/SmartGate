@@ -8,7 +8,7 @@ using SmartGate.Domain.Visits;
 using SmartGate.Domain.Visits.Entities;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace SmartGate.Application.Tests;
+namespace SmartGate.Application.Tests.Visits;
 
 public class VisitServiceTests
 {
