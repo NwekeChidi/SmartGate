@@ -18,7 +18,7 @@ SmartGate is a visit management system designed for tracking truck visits throug
 * **Idempotency:** optional GUID; duplicates (same key) are rejected.
 * **Pagination:** default **page=1**, **pageSize=20**; pageSize **capped at 200**; invalid values fall back to defaults.
 * **Caching:** list endpoint cached **in-memory for 2 minutes**; only common keys invalidated → other pages can be stale up to 2 min.
-* **Rate limiting:** **120 requests/min per client** (production).
+* **Rate limiting:** **120 requests/min per client** (production: 300).
 * **Auth:** dev mode may bypass auth; prod/UAT require **JWT** with scopes (**visits:read / visits:write / admin:manage**).
 * **Driver reuse:** driver looked up by normalized ID; if missing, created with sanitized names.
 * **Normalization policy:** original formatting (spaces, dashes) isn't stored—normalized values are persisted and returned.
