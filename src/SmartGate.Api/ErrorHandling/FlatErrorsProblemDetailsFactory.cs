@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -55,9 +56,9 @@ public sealed class FlatErrorsProblemDetailsFactory : ProblemDetailsFactory
                 kv.Value!.Errors.Select(e => new
                 {
                     field = kv.Key.StartsWith("$.") ? kv.Key.TrimStart('$', '.') : kv.Key.TrimStart('.'),
-                    message = string.IsNullOrWhiteSpace(e.ErrorMessage) && e.Exception != null
+                    message = WebUtility.HtmlEncode(string.IsNullOrWhiteSpace(e.ErrorMessage) && e.Exception != null
                         ? e.Exception.Message
-                        : e.ErrorMessage
+                        : e.ErrorMessage)
                 }))
             .Where(e => !string.Equals(e.field, "body", StringComparison.OrdinalIgnoreCase))
             .Cast<object>()
