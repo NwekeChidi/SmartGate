@@ -35,7 +35,7 @@ Represents truck driver information.
 
 **Business Rules:**
 - Driver ID must start with "DFDS-" prefix
-- Driver ID suffix must be 1-11 numeric characters
+- Driver ID suffix must be exactly 11 numeric characters
 - Total driver ID length must be exactly 16 characters
 - Names cannot be empty and are trimmed
 - Driver ID is normalized to uppercase
@@ -49,7 +49,7 @@ Represents truck information.
 **Business Rules:**
 - License plate is normalized (uppercase, alphanumeric only)
 - Must be exactly 7 characters after normalization
-- Input can be 7-32 characters before normalization
+- Input must normalize to exactly 7 characters
 
 ### Activity
 Represents individual activities during a visit.
@@ -61,10 +61,10 @@ Represents individual activities during a visit.
 
 **Business Rules:**
 - Unit number must start with "DFDS"
-- Unit number must follow pattern: DFDS<6 numeric characters>
+- Unit number must follow pattern: DFDS[0-9]{6} (exactly 6 digits after DFDS)
 - Unit number is normalized (uppercase, alphanumeric only)
 - Must be exactly 10 characters after normalization
-- Input can be 10-32 characters before normalization
+- Input must normalize to exactly 10 characters
 
 ## Enumerations
 
@@ -113,9 +113,9 @@ Raised when a visit's status is updated.
 - Driver IDs: Uppercase, preserve DFDS- prefix format
 
 ### Validation Rules
-- **Driver ID**: Must match pattern `DFDS-[0-9]{1,11}`, exactly 16 characters total
-- **License Plate**: Exactly 7 characters after normalization (7-32 characters input)
-- **Unit Number**: Must match pattern `DFDS<6 numeric characters>`, exactly 10 characters after normalization (10-32 characters input)
+- **Driver ID**: Must match pattern `DFDS-[0-9]{11}`, exactly 16 characters total
+- **License Plate**: Exactly 7 characters after normalization (input must normalize to exactly 7 characters)
+- **Unit Number**: Must match pattern `DFDS[0-9]{6}`, exactly 10 characters after normalization (input must normalize to exactly 10 characters)
 - **Names**: Required, max 128 characters, trimmed
 - **Activities**: At least one required per visit
 - **Status**: New visits must have status 'PreRegistered'
@@ -154,10 +154,11 @@ PreRegistered → AtGate → OnSite → Completed
 For complete API request/response examples and detailed validation scenarios, see [API-CONTRACTS.md](../API-CONTRACTS.md).
 
 ### Common Validation Error Patterns
-- Driver ID length: "'Driver Id' must be 16 characters in length. You entered X characters."
+- Driver ID length: "'Driver Id' must be exactly 16 characters. You entered X characters."
 - Driver ID pattern: "driver.id must match pattern DFDS-<11 numeric characters>."
-- License plate length: "'Truck License Plate' must be 7 characters in length. You entered X characters."
-- Unit number length: "'Unit Number' must be 10 characters in length. You entered X characters."
+- Driver ID domain errors: "driver id must start with DFDS-.", "driver id must include 11 numeric characters after DFDS-."
+- License plate length: "'Truck License Plate' must be exactly 7 characters. You entered X characters."
+- Unit number length: "'Unit Number' must be exactly 10 characters. You entered X characters."
 - Unit number pattern: "activity.unitNumber must match pattern DFDS<6 numeric characters>."
 - Empty activities: "At least one activity is required"
 - Invalid status for new visits: "New visits must have status 'PreRegistered'"
