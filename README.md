@@ -6,6 +6,24 @@ A .NET 8 Web API for managing truck visits and gate operations, built with Clean
 
 SmartGate is a visit management system designed for tracking truck visits through different stages of gate operations. It provides REST API endpoints for creating, updating, and querying visit records with proper authentication and authorization.
 
+## Assumptions
+
+* **Truck plates:** trim, uppercase, strip non-alphanumeric; must normalize to **exactly 7 chars**.
+* **Unit numbers:** trim, uppercase, strip non-alphanumeric; must be **`DFDS` + 6 digits** (normalize to **10 chars**).
+* **Driver ID:** case-insensitive; must be **`DFDS-` + 11 digits** (**16 chars total**); stored uppercased.
+* **Driver names:** required, trimmed, max **128** chars each.
+* **Activities:** at least **one** required per visit; only **Delivery** or **Collection** allowed.
+* **Initial status:** new visits must start as **PreRegistered**.
+* **Status flow:** linear **PreRegistered → AtGate → OnSite → Completed**; no skips/backwards; **Completed** is terminal; setting same status is a no-op.
+* **Idempotency:** optional GUID; duplicates (same key) are rejected.
+* **Pagination:** default **page=1**, **pageSize=20**; pageSize **capped at 200**; invalid values fall back to defaults.
+* **Caching:** list endpoint cached **in-memory for 2 minutes**; only common keys invalidated → other pages can be stale up to 2 min.
+* **Rate limiting:** **120 requests/min per client** (production).
+* **Auth:** dev mode may bypass auth; prod/UAT require **JWT** with scopes (**visits:read / visits:write / admin:manage**).
+* **Driver reuse:** driver looked up by normalized ID; if missing, created with sanitized names.
+* **Normalization policy:** original formatting (spaces, dashes) isn't stored—normalized values are persisted and returned.
+* **Notification:** Assummed status update might require notification updates hence implemented a ready to integrate notification system for status update with services like SNS
+
 ## Technology Stack
 
 - **.NET Version**: 8.0
