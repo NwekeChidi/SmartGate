@@ -6,21 +6,22 @@ This document outlines all validation rules, error messages, and data normalizat
 ## Data Normalization
 
 ### License Plates
-- **Input**: 7-32 characters
+- **Input**: Exactly 7 characters (after normalization)
 - **Normalization**: Remove non-alphanumeric characters, convert to uppercase
 - **Output**: Exactly 7 characters
 - **Example**: `" ab-123cd "` → `AB123CD`
 
 ### Unit Numbers
-- **Input**: 10-32 characters
+- **Input**: Exactly 10 characters (after normalization)
 - **Normalization**: Remove non-alphanumeric characters, convert to uppercase
 - **Output**: Exactly 10 characters, must start with "DFDS"
-- **Example**: `" dfds-123456 "` → `DFDS123456`
+- **Pattern**: `DFDS[0-9]{6}` (exactly 6 digits after DFDS)
+- **Example**: `" dfds123456 "` → `DFDS123456`
 
 ### Driver IDs
 - **Input**: Case-insensitive, must follow pattern
 - **Normalization**: Convert to uppercase, preserve format
-- **Output**: Exactly 16 characters, pattern `DFDS-[0-9]{1,11}`
+- **Output**: Exactly 16 characters, pattern `DFDS-[0-9]{11}` (exactly 11 digits)
 - **Example**: `"dfds-12345678901"` → `DFDS-12345678901`
 
 ## Validation Rules
@@ -56,12 +57,13 @@ This document outlines all validation rules, error messages, and data normalizat
 #### Driver ID
 - **Field**: `driver.id`
 - **Required**: Yes
-- **Pattern**: `^(?i)dfds-[0-9]{1,11}$`
+- **Pattern**: `^(?i)dfds-[0-9]{11}$` (exactly 11 digits)
 - **Length**: Exactly 16 characters
 - **Error Messages**:
   - Empty: "'Driver Id' must not be empty."
   - Invalid pattern: "driver.id must match pattern DFDS-<11 numeric characters>."
-  - Wrong length: "'Driver Id' must be 16 characters in length. You entered X characters."
+  - Wrong length: "'Driver Id' must be exactly 16 characters. You entered X characters."
+  - Domain errors: "driver id must start with DFDS-.", "driver id must include 11 numeric characters after DFDS-.", "driver id suffix must be numeric (0–9)."
 
 ### Activities
 #### Collection Validation
@@ -75,14 +77,13 @@ This document outlines all validation rules, error messages, and data normalizat
 #### Unit Number
 - **Field**: `activities[].unitNumber`
 - **Required**: Yes
-- **Min Length**: 10 characters (input)
-- **Max Length**: 32 characters (input)
+- **Length**: Exactly 10 characters (input and after normalization)
 - **Normalized Length**: Exactly 10 characters
 - **Must Start With**: "DFDS"
-- **Pattern**: `DFDS<6 numeric characters>`
+- **Pattern**: `^(?i)dfds[0-9]{6}$` (exactly 6 digits after DFDS)
 - **Error Messages**:
   - Empty: "'Unit Number' must not be empty."
-  - Too short: "'Unit Number' must be 10 characters in length. You entered X characters."
+  - Wrong length: "'Unit Number' must be exactly 10 characters. You entered X characters."
   - Invalid pattern: "activity.unitNumber must match pattern DFDS<6 numeric characters>."
   - Domain error: "unitNumber must be exactly 10 characters long."
   - Invalid prefix: "UnitNumber must start with 'DFDS'."
@@ -149,7 +150,7 @@ PreRegistered → AtGate → OnSite → Completed
   "activities": [
     {
       "type": "Delivery",
-      "unitNumber": "DFDS-123456"
+      "unitNumber": "DFDS123456"
     }
   ],
   "status": "PreRegistered"
