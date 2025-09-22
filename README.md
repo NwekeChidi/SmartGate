@@ -24,101 +24,44 @@ smartgate/
 ├── src/
 │   ├── SmartGate.Api/
 │   │   ├── Auth/
-│   │   │   ├── DevAuthHandler.cs
-│   │   │   ├── Policies.cs
-│   │   │   └── UserContext.cs
 │   │   ├── Common/
-│   │   │   └── AppConstants.cs
 │   │   ├── Controllers/
-│   │   │   └── VisitsController.cs
 │   │   ├── ErrorHandling/
-│   │   │   ├── FlatErrorsProblemDetailsFactory.cs
-│   │   │   ├── ProblemDetailsExtensions.cs
-│   │   │   └── StringTryParseConverterFactory.cs
 │   │   ├── Extensions/
-│   │   │   ├── ServiceCollectionExtensions.cs
-│   │   │   └── WebApplicationExtensions.cs
-│   │   ├── Properties/
-│   │   │   └── launchSettings.json
-│   │   ├── appsettings.Development.json
-│   │   ├── appsettings.json
-│   │   ├── appsettings.Production.json
-│   │   ├── appsettings.Uat.json
-│   │   ├── Program.cs
-│   │   ├── SmartGate.Api.csproj
-│   │   └── SmartGate.Api.http
+│   │   └── Properties/
 │   ├── SmartGate.Application/
 │   │   ├── Abstractions/
-│   │   │   ├── DuplicateRequestException.cs
-│   │   │   ├── IClock.cs
-│   │   │   ├── IIdempotencyStore.cs
-│   │   │   ├── IPiiPolicy.cs
-│   │   │   ├── IUserContext.cs
-│   │   │   └── IVisitService.cs
-│   │   ├── Visits/
-│   │   │   ├── Dto/
-│   │   │   ├── Ports/
-│   │   │   ├── Validators/
-│   │   │   └── VisitService.cs
-│   │   └── SmartGate.Application.csproj
+│   │   └── Visits/
+│   │       ├── Dto/
+│   │       ├── Ports/
+│   │       └── Validators/
 │   ├── SmartGate.Domain/
 │   │   ├── Common/
-│   │   │   ├── AggregateRoot.cs
-│   │   │   ├── DomainConstants.cs
-│   │   │   ├── DomainException.cs
-│   │   │   ├── IDomainEvent.cs
-│   │   │   └── Normalization.cs
-│   │   ├── Visits/
-│   │   │   ├── Entities/
-│   │   │   ├── Events/
-│   │   │   ├── Enums.cs
-│   │   │   └── Exceptions.cs
-│   │   └── SmartGate.Domain.csproj
+│   │   └── Visits/
+│   │       ├── Entities/
+│   │       └── Events/
 │   └── SmartGate.Infrastructure/
 │       ├── Database/
-│       │   ├── Setup/
-│       │   ├── DesignTimeDBContextFactory.cs
-│       │   └── SmartGateDBContext.cs
+│       │   └── Setup/
 │       ├── Migrations/
-│       ├── Repositories/
-│       │   ├── DriverRepository.cs
-│       │   ├── IdempotencyStore.cs
-│       │   └── VisitRepository.cs
-│       └── SmartGate.Infrastructure.csproj
+│       └── Repositories/
 ├── tests/
 │   ├── SmartGate.Api.Tests/
 │   │   ├── Auth/
 │   │   ├── Controllers/
-│   │   ├── ErrorHandling/
-│   │   └── SmartGate.Api.Tests.csproj
+│   │   └── ErrorHandling/
 │   ├── SmartGate.Application.Tests/
 │   │   ├── Dto/
-│   │   ├── Visits/
-│   │   ├── SmartGate.Application.Tests.csproj
-│   │   └── TestHelpers.cs
+│   │   └── Visits/
+│   │       └── Validators/
 │   └── SmartGate.Domain.Tests/
 │       ├── Common/
-│       ├── Visits/
-│       ├── SmartGate.Domain.Tests.csproj
-│       └── TestDataBuilders.cs
+│       └── Visits/
+│           ├── Entities/
+│           └── Events/
 ├── scripts/
-│   ├── generate-token.ps1
-│   ├── start-smartgate.ps1
-│   └── test-coverage.ps1
 ├── docs/
-│   ├── adrs/
-│   ├── api-reference.md
-│   ├── deployment-guide.md
-│   ├── development-guide.md
-│   ├── domain-model.md
-│   ├── README.md
-│   └── VALIDATION-RULES.md
-├── coverage/
-├── TestResults/
-├── API-CONTRACTS.md
-├── docker-compose.yml
-├── README.md
-└── SmartGate.sln
+    └── adrs/
 ```
 
 ## Core Functionality
